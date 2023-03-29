@@ -7,38 +7,88 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using static UrlDir;
 
 namespace HUDReplacer
 {
-	[KSPAddon(KSPAddon.Startup.EveryScene, false)]
-	public class HUDReplacer : MonoBehaviour
+	// TODO: fix startup scenes running twice
+	// TODO: some textures unload on scene change and doesnt get reapplied
+	
+	[KSPAddon(KSPAddon.Startup.MainMenu, false)]
+	public class HUDReplacerMainMenu : HUDReplacer
+	{
+
+	}
+	[KSPAddon(KSPAddon.Startup.FlightEditorAndKSC, false)]
+	public class HUDReplacerFEKSC : HUDReplacer
+	{
+
+	}
+	public partial class HUDReplacer : MonoBehaviour
 	{
 		private static Dictionary<string, string> images;
 		private static string filePathConfig = "HUDReplacer";
-		private static bool firstTimeRun = false;
-		private static GameScenes[] allowedScenes = new GameScenes[] { GameScenes.MAINMENU, GameScenes.SETTINGS, GameScenes.SPACECENTER, GameScenes.EDITOR, GameScenes.FLIGHT, GameScenes.TRACKSTATION };
-
 		public void Awake()
         {
-			if(!allowedScenes.Contains(HighLogic.LoadedScene))
+			Debug.Log("HUDReplacer: Running scene change. " + HighLogic.LoadedScene);
+			if(images == null)
 			{
-				return;
-			}
-			if (!firstTimeRun)
-			{
-				firstTimeRun = true;
-				Debug.Log("HUDReplacer: Performing initialization.");
 				GetImages();
 			}
-			Debug.Log("HUDReplacer: Running scene change. " + HighLogic.LoadedScene);
 			if(images.Count > 0)
 			{
 				Debug.Log("HUDReplacer: Replacing textures...");
 				ReplaceImages();
+				Debug.Log("HUDReplacer: Textures have been replaced!");
 			}
+		}
 
-			Debug.Log("HUDReplacer: Textures have been replaced!");
+		public void Update()
+		{
+			if(Input.GetKeyUp(KeyCode.E))
+			{
+				Debug.Log("HUDReplacer: Dumping list of loaded texture2D objects...");
+				Texture2D[] tex_array = (Texture2D[])(object)Resources.FindObjectsOfTypeAll(typeof(Texture2D));
+				foreach(Texture2D tex in tex_array)
+				{
+					Debug.Log(tex.name);
+				}
+				Debug.Log("HUDReplacer: Dumping finished.");
+			}
+			if (Input.GetKeyUp(KeyCode.Q))
+			{
+				GetImages();
+				ReplaceImages();
+				Debug.Log("HUDReplacer: Refreshed.");
+			}
+			if (Input.GetKeyUp(KeyCode.D))
+			{
+
+				PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+				eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+
+				List<RaycastResult> results = new List<RaycastResult>();
+				EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+				
+				foreach(RaycastResult result in results)
+				{
+					try
+					{
+						Image img = result.gameObject.GetComponent<Image>();
+						Debug.Log("HUDReplacer: ------");
+						Debug.Log("Image.mainTexture.name: " + img.mainTexture.name + " - WxH=" + img.mainTexture.width + "x" + img.mainTexture.height);
+						Debug.Log("Image.sprite.texture.name: " + img.sprite.texture.name + " - WxH=" + img.sprite.texture.width + "x" + img.sprite.texture.height);
+						Debug.Log("HUDReplacer: ------");
+					}catch(Exception e)
+					{
+						Debug.Log(e.ToString());
+					}
+					
+
+				}
+			}
 		}
 
 		private void GetImages()
@@ -77,34 +127,43 @@ namespace HUDReplacer
 
 			Texture2D[] tex_array = (Texture2D[])(object)Resources.FindObjectsOfTypeAll(typeof(Texture2D));
 
-			List<string> toRemove = new List<string>();
-
 			foreach (Texture2D tex in tex_array)
 			{
 				foreach (KeyValuePair<string, string> image in images)
 				{
-					if(image.Key == tex.name)
+					string key_stripped = image.Key;
+					
+					if (image.Value.Contains("#"))
 					{
-						Debug.Log("HUDReplacer: Replacing texture " + image.Value);
-						bool success = ImageConversion.LoadImage(tex, File.ReadAllBytes(image.Value));
-						toRemove.Add(image.Key);
-						continue;
+						// Some textures have multiple variants in varying sizes. We don't want to overwrite a texture with the wrong dimensions, as it will not render correctly.
+						// For these special cases, we save the width and height in the filename, appended by a # to tell the program this is a multi-texture.
+						key_stripped = image.Key.Substring(0, image.Key.IndexOf("#", StringComparison.Ordinal));
+					}
+					if(key_stripped == tex.name)
+					{
+						if (key_stripped != image.Key)
+						{
+							// Special case texture
+							string size = image.Key.Substring(image.Key.LastIndexOf("#")+1);
+							int width = int.Parse(size.Substring(0, size.IndexOf("x")));
+							int height = int.Parse(size.Substring(size.IndexOf("x")+1));
+							if(tex.width == width && tex.height == height)
+							{
+								Debug.Log("HUDReplacer: Replacing texture " + image.Value);
+								ImageConversion.LoadImage(tex, File.ReadAllBytes(image.Value));
+								continue;
+							}
+						}
+						else
+						{
+							// Regular texture
+							Debug.Log("HUDReplacer: Replacing texture " + image.Value);
+							ImageConversion.LoadImage(tex, File.ReadAllBytes(image.Value));
+							continue;
+						}
 					}
 				}
-				
-				
 			}
-
-			if (toRemove.Count > 0)
-			{
-				foreach (string key in toRemove)
-				{
-					images.Remove(key);
-				}
-			}
-
 		}
-
-		
 	}
 }
