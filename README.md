@@ -25,7 +25,7 @@ Let's say we want to replace the texture for the Admin building in the KSC sideb
 
 ![KSC 1](https://i.imgur.com/KwzfnZN.png)
 
-If we install the texture pack development version of HUDReplacer, we can go ingame and open the console, then press D on the keyboard to log the name of the texture that the mouse is currently over.
+If we install the developer version of HUDReplacer, we can go ingame and open the console, then press D on the keyboard to log the name of the texture that the mouse is currently over.
 In this case, we should get the result:
 
 `Image.mainTexture.name: Buttons_Admin - WxH=256x256`
