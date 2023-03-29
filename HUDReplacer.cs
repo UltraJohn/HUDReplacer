@@ -44,8 +44,8 @@ namespace HUDReplacer
 				Debug.Log("HUDReplacer: Textures have been replaced!");
 			}
 		}
-
-		public void Update()
+#if DEBUG
+    public void Update()
 		{
 			if(Input.GetKeyUp(KeyCode.E))
 			{
@@ -90,6 +90,8 @@ namespace HUDReplacer
 				}
 			}
 		}
+#endif
+		
 
 		private void GetImages()
 		{
@@ -149,7 +151,7 @@ namespace HUDReplacer
 							int height = int.Parse(size.Substring(size.IndexOf("x")+1));
 							if(tex.width == width && tex.height == height)
 							{
-								Debug.Log("HUDReplacer: Replacing texture " + image.Value);
+								//Debug.Log("HUDReplacer: Replacing texture " + image.Value);
 								ImageConversion.LoadImage(tex, File.ReadAllBytes(image.Value));
 								continue;
 							}
@@ -157,7 +159,7 @@ namespace HUDReplacer
 						else
 						{
 							// Regular texture
-							Debug.Log("HUDReplacer: Replacing texture " + image.Value);
+							//Debug.Log("HUDReplacer: Replacing texture " + image.Value);
 							ImageConversion.LoadImage(tex, File.ReadAllBytes(image.Value));
 							continue;
 						}
