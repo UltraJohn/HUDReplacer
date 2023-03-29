@@ -72,5 +72,32 @@
     <Compile Include="HUDReplacer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ExampleMod\ExampleConfig.cfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ExampleMod\PluginData\appButton_bg.png" />
+    <Content Include="ExampleMod\PluginData\appButton_normal.png" />
+    <Content Include="ExampleMod\PluginData\appDivider_arrowRIGHT_normal.png" />
+    <Content Include="ExampleMod\PluginData\Button_NextMorning_KSC.png" />
+    <Content Include="ExampleMod\PluginData\KSCTopBar 1.png" />
+    <Content Include="ExampleMod\PluginData\KSCTopBar 3.png" />
+    <Content Include="ExampleMod\PluginData\KSCTopBar.png" />
+    <Content Include="ExampleMod\PluginData\KSCTopBarNew.png" />
+    <Content Include="ExampleMod\PluginData\METButton.png" />
+    <Content Include="ExampleMod\PluginData\rect_round_color#64x64.png" />
+    <Content Include="ExampleMod\PluginData\rect_round_color#69x69.png" />
+    <Content Include="ExampleMod\PluginData\rect_round_dark#64x64.png" />
+    <Content Include="ExampleMod\PluginData\rect_round_dark#69x69.png" />
+    <Content Include="ExampleMod\PluginData\rect_round_dark_transparent#64x64.png" />
+    <Content Include="ExampleMod\PluginData\rect_round_dark_transparent#69x69.png" />
+    <Content Include="ExampleMod\PluginData\rect_round_down_dark#64x64.png" />
+    <Content Include="ExampleMod\PluginData\rect_round_down_dark#69x69.png" />
+    <Content Include="ExampleMod\PluginData\rect_round_down_dark_transparent#64x64.png" />
+    <Content Include="ExampleMod\PluginData\rect_round_down_dark_transparent#69x69.png" />
+    <Content Include="ExampleMod\PluginData\rect_round_down_dark_veryTransparent#64x64.png" />
+    <Content Include="ExampleMod\PluginData\rect_round_down_dark_veryTransparent#69x69.png" />
+    <Content Include="ExampleMod\PluginData\UiElements_13.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
