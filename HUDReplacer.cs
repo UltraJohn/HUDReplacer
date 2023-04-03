@@ -110,7 +110,8 @@ namespace HUDReplacer
 				string filePath = configFile.config.GetValue("filePath");
 				int priority = int.Parse(configFile.config.GetValue("priority"));
 				Debug.Log("HUDReplacer: path " + filePath + " - priority: "+priority);
-				string[] files = Directory.GetFiles(filePath, "*.png");
+				//string[] files = Directory.GetFiles(filePath, "*.png");
+				string[] files = Directory.GetFiles(KSPUtil.ApplicationRootPath + filePath, "*.png");
 				foreach (string text in files)
 				{
 					Debug.Log("HUDReplacer: Found file " + text);
