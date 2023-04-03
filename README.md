@@ -40,3 +40,8 @@ In the case that a texture has multiple versions that have the same name but dif
 `rect_round_dark#64x64.png` or `rect_round_dark#69x69.png` otherwise, we will be replacing the wrong size texture and that will scale incorrectly.
 
 Make sure to install the regular HUDReplacer version when you're done creating a texture pack as the developer version is not meant to be used while playing.
+
+# Developer version keybindings
+* <strong>Q:</strong> <em>Reload all replaced textures</em>
+* <strong>E:</strong> <em>Dump all textures in scene to ksp.log</em>
+* <strong>D:</strong> <em>Get all textures currently over mouse</em>
