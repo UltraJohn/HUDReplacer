@@ -72,6 +72,7 @@ namespace HUDReplacer
 				List<RaycastResult> results = new List<RaycastResult>();
 				EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
 				
+				Debug.Log("HUDReplacer: [][][][][][][][][][][][][][][][][]");
 				foreach(RaycastResult result in results)
 				{
 					try
