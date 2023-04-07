@@ -20,6 +20,9 @@ HUDReplacer:NEEDS[HUDReplacer]
   Priority of your texture pack in case of duplicate files. Higher number will take priority over other texture packs.
   ```
 
+## Requirements
+[Module Manager](https://forum.kerbalspaceprogram.com/index.php?/topic/50533-*)
+
 ## Example texture modding
 Let's say we want to replace the texture for the Admin building in the KSC sidebar:
 
