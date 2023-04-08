@@ -53,7 +53,7 @@ namespace HUDReplacer
 				Texture2D[] tex_array = (Texture2D[])(object)Resources.FindObjectsOfTypeAll(typeof(Texture2D));
 				foreach(Texture2D tex in tex_array)
 				{
-					Debug.Log(tex.name);
+					Debug.Log(tex.name + " - WxH=" + tex.width + "x" + tex.height);
 				}
 				Debug.Log("HUDReplacer: Dumping finished.");
 			}
@@ -78,7 +78,7 @@ namespace HUDReplacer
 					try
 					{
 						Image img = result.gameObject.GetComponent<Image>();
-						Debug.Log("HUDReplacer: ------");
+						//Debug.Log("HUDReplacer: ------");
 						Debug.Log("Image.mainTexture.name: " + img.mainTexture.name + " - WxH=" + img.mainTexture.width + "x" + img.mainTexture.height);
 						Debug.Log("Image.sprite.texture.name: " + img.sprite.texture.name + " - WxH=" + img.sprite.texture.width + "x" + img.sprite.texture.height);
 						Debug.Log("HUDReplacer: ------");
