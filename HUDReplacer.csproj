@@ -100,4 +100,11 @@
     <Content Include="ExampleMod\PluginData\UiElements_13.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y $(TargetDir)*.dll  $(ProjectDir)PublishOutput\GameData\HUDReplacer
+
+if $(ConfigurationName) == Debug (powershell.exe -Command $null=mkdir '$(SolutionDir)PublishOutput'; Compress-Archive -CompressionLevel Optimal -Path '$(ProjectDir)PublishOutput/GameData' -DestinationPath '$(SolutionDir)PublishOutput\$(ProjectName).Developer.zip' -Force)
+
+if $(ConfigurationName) == Release (powershell.exe -Command $null=mkdir '$(SolutionDir)PublishOutput'; Compress-Archive -CompressionLevel Optimal -Path '$(ProjectDir)PublishOutput/GameData' -DestinationPath '$(SolutionDir)PublishOutput\$(ProjectName).zip' -Force)</PostBuildEvent>
+  </PropertyGroup>
 </Project>

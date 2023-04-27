@@ -26,6 +26,16 @@ namespace HUDReplacer
 	{
 
 	}
+	[KSPAddon(KSPAddon.Startup.TrackingStation, false)]
+	public class HUDReplacerTrackingStation : HUDReplacer
+	{
+
+	}
+	[KSPAddon(KSPAddon.Startup.Settings, false)]
+	public class HUDReplacerSettings : HUDReplacer
+	{
+
+	}
 	public partial class HUDReplacer : MonoBehaviour
 	{
 		private static Dictionary<string, string> images;
