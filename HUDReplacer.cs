@@ -16,6 +16,11 @@ namespace HUDReplacer
 	// TODO: fix startup scenes running twice
 	// TODO: some textures unload on scene change and doesnt get reapplied
 	
+	[KSPAddon(KSPAddon.Startup.Instantly, true)]
+	public class HUDReplacerLoading : HUDReplacer
+	{
+
+	}
 	[KSPAddon(KSPAddon.Startup.MainMenu, false)]
 	public class HUDReplacerMainMenu : HUDReplacer
 	{
@@ -41,7 +46,7 @@ namespace HUDReplacer
 		private static Dictionary<string, string> images;
 		private static string filePathConfig = "HUDReplacer";
 		public void Awake()
-        {
+        	{
 			Debug.Log("HUDReplacer: Running scene change. " + HighLogic.LoadedScene);
 			if(images == null)
 			{
@@ -55,7 +60,7 @@ namespace HUDReplacer
 			}
 		}
 #if DEBUG
-    public void Update()
+		public void Update()
 		{
 			if(Input.GetKeyUp(KeyCode.E))
 			{
