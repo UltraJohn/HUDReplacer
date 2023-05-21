@@ -95,6 +95,7 @@ namespace HUDReplacer
 					}
 				}
 			}
+			/*
 			if (Input.GetKeyUp(KeyCode.G))
 			{
 
@@ -123,6 +124,7 @@ namespace HUDReplacer
 					}
 				}
 			}
+			*/
 		}
 #endif
 		
@@ -179,8 +181,11 @@ namespace HUDReplacer
 					}
 					if(key_stripped == tex.name)
 					{
+						// For the mouse cursor
+						// TODO: Clean up the code
 						if(key_stripped == "basicNeutral")
 						{
+							// Default cursor
 							if(cursors == null)
 							{
 								cursors = new TextureCursor[3];
@@ -191,6 +196,7 @@ namespace HUDReplacer
 						}
 						if (key_stripped == "basicElectricLime")
 						{
+							// Left click cursor
 							if (cursors == null)
 							{
 								cursors = new TextureCursor[3];
@@ -201,6 +207,7 @@ namespace HUDReplacer
 						}
 						if (key_stripped == "basicDisabled")
 						{
+							// Right click cursor
 							if (cursors == null)
 							{
 								cursors = new TextureCursor[3];
