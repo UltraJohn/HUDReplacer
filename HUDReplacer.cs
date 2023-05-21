@@ -151,7 +151,7 @@ namespace HUDReplacer
 					{
 						// Some textures have multiple variants in varying sizes. We don't want to overwrite a texture with the wrong dimensions, as it will not render correctly.
 						// For these special cases, we save the width and height in the filename, appended by a # to tell the program this is a multi-texture.
-						key_stripped = image.Key.Substring(0, image.Key.IndexOf("#", StringComparison.Ordinal));'
+						key_stripped = image.Key.Substring(0, image.Key.IndexOf("#", StringComparison.Ordinal));
 					}
 					if(key_stripped == tex.name)
 					{
