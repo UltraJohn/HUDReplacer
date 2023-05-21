@@ -151,11 +151,46 @@ namespace HUDReplacer
 					{
 						// Some textures have multiple variants in varying sizes. We don't want to overwrite a texture with the wrong dimensions, as it will not render correctly.
 						// For these special cases, we save the width and height in the filename, appended by a # to tell the program this is a multi-texture.
-						key_stripped = image.Key.Substring(0, image.Key.IndexOf("#", StringComparison.Ordinal));
+						key_stripped = image.Key.Substring(0, image.Key.IndexOf("#", StringComparison.Ordinal));'
 					}
 					if(key_stripped == tex.name)
 					{
-						if (key_stripped != image.Key)
+						
+						/////////////////////////////////////////////////////////////////////////////
+						
+						// Check for special cases
+						if (key_stripped == "basicDefault" && Cursors.CursorController.Instance)
+						{
+							// DEFAULT POINTER!!!
+							ImageConversion.LoadImage(tex, File.ReadAllBytes(image.Value));
+							Cursors.CursorController.DefaultCursor = tex;
+							continue;
+						}
+						else if (key_stripped == "basicElectricLime" && Cursors.CursorController.Instance)
+						{
+							// L-CLICK POINTER!!!
+							ImageConversion.LoadImage(tex, File.ReadAllBytes(image.Value));
+							Cursors.CursorController.DefaultLeftClick = tex;
+							continue;
+						}
+						else if (key_stripped == "basicDisabled" && Cursors.CursorController.Instance)
+						{
+							// R-CLICK POINTER!!!
+							ImageConversion.LoadImage(tex, File.ReadAllBytes(image.Value));
+							Cursors.CursorController.DefaultRightClick = tex;
+							continue;
+						}
+					//	else if (key_stripped == "someOtherSpecialName")
+					//	{
+					//		// SPECIAL!!!
+					//		ImageConversion.LoadImage(tex, File.ReadAllBytes(image.Value));
+					//		// Do stuff!
+					//		continue;
+					//	}
+						
+						/////////////////////////////////////////////////////////////////////////////
+						
+						else if (key_stripped != image.Key)
 						{
 							// Special case texture
 							string size = image.Key.Substring(image.Key.LastIndexOf("#")+1);
