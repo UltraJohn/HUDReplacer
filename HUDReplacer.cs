@@ -1,21 +1,15 @@
-﻿using Smooth.Collections;
+﻿using Cursors;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UrlDir;
 
 namespace HUDReplacer
 {
-	// TODO: fix startup scenes running twice
-	// TODO: some textures unload on scene change and doesnt get reapplied
-	
+
 	[KSPAddon(KSPAddon.Startup.MainMenu, false)]
 	public class HUDReplacerMainMenu : HUDReplacer
 	{
@@ -40,22 +34,25 @@ namespace HUDReplacer
 	{
 		private static Dictionary<string, string> images;
 		private static string filePathConfig = "HUDReplacer";
+		private TextureCursor[] cursors;
 		public void Awake()
         {
+
 			Debug.Log("HUDReplacer: Running scene change. " + HighLogic.LoadedScene);
-			if(images == null)
+			if (images == null)
 			{
 				GetImages();
 			}
-			if(images.Count > 0)
+			if (images.Count > 0)
 			{
 				Debug.Log("HUDReplacer: Replacing textures...");
 				ReplaceImages();
 				Debug.Log("HUDReplacer: Textures have been replaced!");
 			}
 		}
+
 #if DEBUG
-    public void Update()
+		public void Update()
 		{
 			if(Input.GetKeyUp(KeyCode.E))
 			{
@@ -96,8 +93,34 @@ namespace HUDReplacer
 					{
 						Debug.Log(e.ToString());
 					}
-					
+				}
+			}
+			if (Input.GetKeyUp(KeyCode.G))
+			{
 
+				PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+				eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+
+				List<RaycastResult> results = new List<RaycastResult>();
+				EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+
+				Debug.Log("HUDReplacer: [][][][][][][][][][][][][][][][][]");
+				foreach (RaycastResult result in results)
+				{
+					try
+					{
+						Debug.Log("GameObject '" + result.gameObject.name + "' contains these components:");
+						string list = "";
+						foreach(Component comp in result.gameObject.GetComponents(typeof(Component))){
+							list+= comp.name+" & ";
+						}
+						list = list.TrimEnd(' ').TrimEnd('&');
+						Debug.Log(list);
+					}
+					catch (Exception e)
+					{
+						Debug.Log(e.ToString());
+					}
 				}
 			}
 		}
@@ -139,6 +162,7 @@ namespace HUDReplacer
 		{
 			if (images.Count == 0) return;
 
+
 			Texture2D[] tex_array = (Texture2D[])(object)Resources.FindObjectsOfTypeAll(typeof(Texture2D));
 
 			foreach (Texture2D tex in tex_array)
@@ -155,6 +179,36 @@ namespace HUDReplacer
 					}
 					if(key_stripped == tex.name)
 					{
+						if(key_stripped == "basicNeutral")
+						{
+							if(cursors == null)
+							{
+								cursors = new TextureCursor[3];
+							}
+							TextureCursor tc = CreateCursor(image.Value);
+							cursors[0] = tc;
+							continue;
+						}
+						if (key_stripped == "basicElectricLime")
+						{
+							if (cursors == null)
+							{
+								cursors = new TextureCursor[3];
+							}
+							TextureCursor tc = CreateCursor(image.Value);
+							cursors[1] = tc;
+							continue;
+						}
+						if (key_stripped == "basicDisabled")
+						{
+							if (cursors == null)
+							{
+								cursors = new TextureCursor[3];
+							}
+							TextureCursor tc = CreateCursor(image.Value);
+							cursors[2] = tc;
+							continue;
+						}
 						if (key_stripped != image.Key)
 						{
 							// Special case texture
@@ -178,6 +232,25 @@ namespace HUDReplacer
 					}
 				}
 			}
+
+			if(cursors != null)
+			{
+				CursorController.Instance.AddCursor("HUDReplacerCursor", cursors[0], cursors[1], cursors[2]);
+				CursorController.Instance.ChangeCursor("HUDReplacerCursor");
+				Debug.Log("HUDReplacer: Changed Cursor!");
+			}
+
+		}
+
+		private TextureCursor CreateCursor(string value)
+		{
+			Texture2D cursor = new Texture2D(2, 2);
+			cursor.LoadImage(File.ReadAllBytes(value));
+			//Cursor.SetCursor(cursor, new Vector2(6,0), CursorMode.ForceSoftware);
+			TextureCursor tc = new TextureCursor();
+			tc.texture = cursor;
+			tc.hotspot = new Vector2(6, 0);
+			return tc;
 		}
 	}
 }
