@@ -1,5 +1,6 @@
 ﻿using Cursors;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -239,14 +240,20 @@ namespace HUDReplacer
 					}
 				}
 			}
+			// Need to wait a small amount of time after scene load before you can set the cursor.
+			this.Invoke(SetCursor, 1f);
+		}
 
-			if(cursors != null)
+		private void SetCursor()
+		{
+			if (cursors != null && cursors[0] != null)
 			{
+				if (cursors[1] == null) cursors[1] = cursors[0];
+				if (cursors[2] == null) cursors[2] = cursors[0];
 				CursorController.Instance.AddCursor("HUDReplacerCursor", cursors[0], cursors[1], cursors[2]);
 				CursorController.Instance.ChangeCursor("HUDReplacerCursor");
 				Debug.Log("HUDReplacer: Changed Cursor!");
 			}
-
 		}
 
 		private TextureCursor CreateCursor(string value)
