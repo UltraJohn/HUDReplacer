@@ -39,7 +39,7 @@ Now we can go ahead and create our own texture, or possibly just recolor the ori
 We make sure to save our new texture as: `Buttons_Admin.png` and place it in our folder containing the new textures that we specified in the config file.
 Start up the game and you should see the icon is now our new texture!
 
-In the case that a texture has multiple versions that have the same name but different sizes (e.g. "rect_round_dark"), we must ensure that we append the dimensions of the texture to the filename, like this:
+In the case of a texture which has multiple versions that have the same name but different sizes (e.g. "rect_round_dark"), we must ensure that we append the dimensions of the texture to the filename, like this:
 `rect_round_dark#64x64.png` or `rect_round_dark#69x69.png` otherwise, we will be replacing the wrong size texture and that will scale incorrectly.
 
 Make sure to install the regular HUDReplacer version when you're done creating a texture pack as the developer version is not meant to be used while playing.
