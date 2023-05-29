@@ -33,12 +33,12 @@ namespace HUDReplacer
 	}
 	public partial class HUDReplacer : MonoBehaviour
 	{
+		internal static bool enableDebug = false;
 		private static Dictionary<string, string> images;
 		private static string filePathConfig = "HUDReplacer";
 		private TextureCursor[] cursors;
 		public void Awake()
         {
-
 			Debug.Log("HUDReplacer: Running scene change. " + HighLogic.LoadedScene);
 			if (images == null)
 			{
@@ -52,82 +52,87 @@ namespace HUDReplacer
 			}
 		}
 
-#if DEBUG
 		public void Update()
 		{
-			if(Input.GetKeyUp(KeyCode.E))
+			if(enableDebug)
 			{
-				Debug.Log("HUDReplacer: Dumping list of loaded texture2D objects...");
-				Texture2D[] tex_array = (Texture2D[])(object)Resources.FindObjectsOfTypeAll(typeof(Texture2D));
-				foreach(Texture2D tex in tex_array)
+				if (Input.GetKeyUp(KeyCode.E))
 				{
-					Debug.Log(tex.name + " - WxH=" + tex.width + "x" + tex.height);
-				}
-				Debug.Log("HUDReplacer: Dumping finished.");
-			}
-			if (Input.GetKeyUp(KeyCode.Q))
-			{
-				GetImages();
-				ReplaceImages();
-				Debug.Log("HUDReplacer: Refreshed.");
-			}
-			if (Input.GetKeyUp(KeyCode.D))
-			{
-
-				PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
-				eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-
-				List<RaycastResult> results = new List<RaycastResult>();
-				EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
-				
-				Debug.Log("HUDReplacer: [][][][][][][][][][][][][][][][][]");
-				foreach(RaycastResult result in results)
-				{
-					try
+					Debug.Log("HUDReplacer: Dumping list of loaded texture2D objects...");
+					Texture2D[] tex_array = (Texture2D[])(object)Resources.FindObjectsOfTypeAll(typeof(Texture2D));
+					foreach (Texture2D tex in tex_array)
 					{
-						Image img = result.gameObject.GetComponent<Image>();
-						//Debug.Log("HUDReplacer: ------");
-						Debug.Log("Image.mainTexture.name: " + img.mainTexture.name + " - WxH=" + img.mainTexture.width + "x" + img.mainTexture.height);
-						Debug.Log("Image.sprite.texture.name: " + img.sprite.texture.name + " - WxH=" + img.sprite.texture.width + "x" + img.sprite.texture.height);
-						Debug.Log("HUDReplacer: ------");
-					}catch(Exception e)
-					{
-						Debug.Log(e.ToString());
+						Debug.Log(tex.name + " - WxH=" + tex.width + "x" + tex.height);
 					}
+					Debug.Log("HUDReplacer: Dumping finished.");
 				}
-			}
-			/*
-			if (Input.GetKeyUp(KeyCode.G))
-			{
-
-				PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
-				eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-
-				List<RaycastResult> results = new List<RaycastResult>();
-				EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
-
-				Debug.Log("HUDReplacer: [][][][][][][][][][][][][][][][][]");
-				foreach (RaycastResult result in results)
+				if (Input.GetKeyUp(KeyCode.Q))
 				{
-					try
+					GetImages();
+					ReplaceImages();
+					Debug.Log("HUDReplacer: Refreshed.");
+				}
+				if (Input.GetKeyUp(KeyCode.D))
+				{
+
+					PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+					eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+
+					List<RaycastResult> results = new List<RaycastResult>();
+					EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+
+					Debug.Log("HUDReplacer: [][][][][][][][][][][][][][][][][]");
+					foreach (RaycastResult result in results)
 					{
-						Debug.Log("GameObject '" + result.gameObject.name + "' contains these components:");
-						string list = "";
-						foreach(Component comp in result.gameObject.GetComponents(typeof(Component))){
-							list+= comp.name+" & ";
+						try
+						{
+							Image img = result.gameObject.GetComponent<Image>();
+							//Debug.Log("HUDReplacer: ------");
+							Debug.Log("Image.mainTexture.name: " + img.mainTexture.name + " - WxH=" + img.mainTexture.width + "x" + img.mainTexture.height);
+							Debug.Log("Image.sprite.texture.name: " + img.sprite.texture.name + " - WxH=" + img.sprite.texture.width + "x" + img.sprite.texture.height);
+							Debug.Log("HUDReplacer: ------");
+							Texture2D tex = (Texture2D)img.mainTexture;
+							//DumpTexture(tex);
 						}
-						list = list.TrimEnd(' ').TrimEnd('&');
-						Debug.Log(list);
-					}
-					catch (Exception e)
-					{
-						Debug.Log(e.ToString());
+						catch (Exception e)
+						{
+							Debug.Log(e.ToString());
+						}
 					}
 				}
+				/*
+				if (Input.GetKeyUp(KeyCode.G))
+				{
+
+					PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+					eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+
+					List<RaycastResult> results = new List<RaycastResult>();
+					EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+
+					Debug.Log("HUDReplacer: [][][][][][][][][][][][][][][][][]");
+					foreach (RaycastResult result in results)
+					{
+						try
+						{
+							Debug.Log("GameObject '" + result.gameObject.name + "' contains these components:");
+							string list = "";
+							foreach(Component comp in result.gameObject.GetComponents(typeof(Component))){
+								list+= comp.name+" & ";
+							}
+							list = list.TrimEnd(' ').TrimEnd('&');
+							Debug.Log(list);
+						}
+						catch (Exception e)
+						{
+							Debug.Log(e.ToString());
+						}
+					}
+				}
+				*/
 			}
-			*/
+
 		}
-#endif
 		
 
 		private void GetImages()
@@ -265,6 +270,19 @@ namespace HUDReplacer
 			tc.texture = cursor;
 			tc.hotspot = new Vector2(6, 0);
 			return tc;
+		}
+
+		// Might be useful in the future, if it's possible to read textures from the game's data.
+		// It's currently blocked by the ImportFormat IsReadable flag.
+		// As it stands right now this is the problem:
+		// "Texture is not readable. The texture memory cannot be accessed from scripts."
+		private void DumpTexture(Texture2D tex)
+		{
+			string path = KSPUtil.ApplicationRootPath + "GameData/HUDReplacer/PluginData/Dump";
+			if (!Directory.Exists(path)){
+				Directory.CreateDirectory(path);
+			}
+			File.WriteAllBytes(path, tex.EncodeToPNG());
 		}
 	}
 }
