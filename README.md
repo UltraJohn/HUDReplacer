@@ -28,7 +28,8 @@ Let's say we want to replace the texture for the Admin building in the KSC sideb
 
 ![KSC 1](https://i.imgur.com/KwzfnZN.png)
 
-If we install the developer version of HUDReplacer, we can go ingame and open the console, then press D on the keyboard to log the name of the texture that the mouse is currently over.
+To enable the developer features, go into GameData/HUDReplacer/Settings.cfg and change the setting **showDebugToolbar** from **false** to **true**.
+After this, we can go ingame and open the console, then press D on the keyboard to log the name of the texture that the mouse is currently over.
 In this case, we should get the result:
 
 `Image.mainTexture.name: Buttons_Admin - WxH=256x256`
@@ -41,8 +42,6 @@ Start up the game and you should see the icon is now our new texture!
 
 In the case of a texture which has multiple versions that have the same name but different sizes (e.g. "rect_round_dark"), we must ensure that we append the dimensions of the texture to the filename, like this:
 `rect_round_dark#64x64.png` or `rect_round_dark#69x69.png` otherwise, we will be replacing the wrong size texture and that will scale incorrectly.
-
-Make sure to install the regular HUDReplacer version when you're done creating a texture pack as the developer version is not meant to be used while playing.
 
 # Developer version keybindings
 * <strong>Q:</strong> <em>Reload all replaced textures</em>

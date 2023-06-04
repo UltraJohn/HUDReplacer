@@ -1,15 +1,30 @@
-﻿using Cursors;
+﻿using Assets._UI5.Rendering.Scripts;
+using Cursors;
+using HarmonyLib;
+using KSP.UI.Screens;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace HUDReplacer
 {
+	[KSPAddon(KSPAddon.Startup.MainMenu, true)]
+	public class HUDReplacerHarmony : MonoBehaviour
+	{
+		public void Awake()
+		{
+			// NOTE: A Harmony patcher should be placed in a run once Startup addon. The patch is kept between scene changes.
+			var harmony = new Harmony("UltraJohn.Mods.HUDReplacer");
+			harmony.PatchAll(Assembly.GetExecutingAssembly());
+		}
+	}
+	
 
 	[KSPAddon(KSPAddon.Startup.MainMenu, false)]
 	public class HUDReplacerMainMenu : HUDReplacer
@@ -36,20 +51,23 @@ namespace HUDReplacer
 		internal static bool enableDebug = false;
 		private static Dictionary<string, string> images;
 		private static string filePathConfig = "HUDReplacer";
+		private static string colorPathConfig = "HUDReplacerRecolor";
 		private TextureCursor[] cursors;
 		public void Awake()
         {
+
 			Debug.Log("HUDReplacer: Running scene change. " + HighLogic.LoadedScene);
 			if (images == null)
 			{
-				GetImages();
+				GetTextures();
 			}
 			if (images.Count > 0)
 			{
 				Debug.Log("HUDReplacer: Replacing textures...");
-				ReplaceImages();
+				ReplaceTextures();
 				Debug.Log("HUDReplacer: Textures have been replaced!");
 			}
+			LoadHUDColors();
 		}
 
 		public void Update()
@@ -68,8 +86,9 @@ namespace HUDReplacer
 				}
 				if (Input.GetKeyUp(KeyCode.Q))
 				{
-					GetImages();
-					ReplaceImages();
+					GetTextures();
+					ReplaceTextures();
+					LoadHUDColors();
 					Debug.Log("HUDReplacer: Refreshed.");
 				}
 				if (Input.GetKeyUp(KeyCode.D))
@@ -91,7 +110,11 @@ namespace HUDReplacer
 							Debug.Log("Image.mainTexture.name: " + img.mainTexture.name + " - WxH=" + img.mainTexture.width + "x" + img.mainTexture.height);
 							Debug.Log("Image.sprite.texture.name: " + img.sprite.texture.name + " - WxH=" + img.sprite.texture.width + "x" + img.sprite.texture.height);
 							Debug.Log("HUDReplacer: ------");
-							Texture2D tex = (Texture2D)img.mainTexture;
+							if(img.mainTexture.name == "app_divider_pulldown_header" || img.mainTexture.name == "app_divider_pulldown_header_over")
+							{
+								//result.gameObject.GetComponent<CanvasRenderer>().SetColor(Color.red);
+							}
+							//Texture2D tex = (Texture2D)img.mainTexture;
 							//DumpTexture(tex);
 						}
 						catch (Exception e)
@@ -133,15 +156,42 @@ namespace HUDReplacer
 			}
 
 		}
-		
+		private static bool PAWTitleBar_replace = false;
+		private static Color PAWTitleBar_color;
 
-		private void GetImages()
+		[HarmonyPatch(typeof(UIPartActionController), "CreatePartUI")]
+		class Patch1
+		{
+			static void Postfix(ref UIPartActionWindow __result)
+			{
+				if (!PAWTitleBar_replace) return;
+				try
+				{
+
+					Image[] images = __result.gameObject.GetComponentsInChildren<Image>();
+					foreach(Image img in images)
+					{
+						if (img.mainTexture.name == "app_divider_pulldown_header_over")
+						{
+							img.color = PAWTitleBar_color;
+						}
+					}
+				}
+				catch(Exception e)
+				{
+					Debug.Log(e.ToString());
+				}
+			}
+		}
+
+
+		private void GetTextures()
 		{
 			images = new Dictionary<string, string>();
 			UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs(filePathConfig);
 			if(configs.Length <= 0)
 			{
-				Debug.Log("HUDReplacer: No configs found.");
+				Debug.Log("HUDReplacer: No texture configs found.");
 				return;
 			}
 			
@@ -166,10 +216,11 @@ namespace HUDReplacer
 				}
 			}
 		}
-		private void ReplaceImages()
+		private void ReplaceTextures()
 		{
 			if (images.Count == 0) return;
 
+			string[] cursor_names = new string[] { "basicNeutral", "basicElectricLime", "basicDisabled" };
 
 			Texture2D[] tex_array = (Texture2D[])(object)Resources.FindObjectsOfTypeAll(typeof(Texture2D));
 
@@ -188,38 +239,13 @@ namespace HUDReplacer
 					if(key_stripped == tex.name)
 					{
 						// For the mouse cursor
-						// TODO: Clean up the code
-						if(key_stripped == "basicNeutral")
+						if (cursor_names.Contains(key_stripped))
 						{
-							// Default cursor
-							if(cursors == null)
-							{
-								cursors = new TextureCursor[3];
-							}
-							TextureCursor tc = CreateCursor(image.Value);
-							cursors[0] = tc;
-							continue;
-						}
-						if (key_stripped == "basicElectricLime")
-						{
-							// Left click cursor
 							if (cursors == null)
 							{
 								cursors = new TextureCursor[3];
 							}
-							TextureCursor tc = CreateCursor(image.Value);
-							cursors[1] = tc;
-							continue;
-						}
-						if (key_stripped == "basicDisabled")
-						{
-							// Right click cursor
-							if (cursors == null)
-							{
-								cursors = new TextureCursor[3];
-							}
-							TextureCursor tc = CreateCursor(image.Value);
-							cursors[2] = tc;
+							cursors[cursor_names.IndexOf(key_stripped)] = CreateCursor(image.Value);
 							continue;
 						}
 						if (key_stripped != image.Key)
@@ -249,6 +275,50 @@ namespace HUDReplacer
 			this.Invoke(SetCursor, 1f);
 		}
 
+		private void LoadHUDColors()
+		{
+			UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs(colorPathConfig);
+			if (configs.Length <= 0)
+			{
+				Debug.Log("HUDReplacer: No color configs found.");
+				return;
+			}
+			configs = configs.OrderByDescending(x => int.Parse(x.config.GetValue("priority"))).ToArray();
+			List<string> colorsSet = new List<string>();
+			foreach (UrlDir.UrlConfig configFile in configs)
+			{
+				int priority = int.Parse(configFile.config.GetValue("priority"));
+
+
+				string tumblerNumerals = "tumblerNumerals";
+				if (configFile.config.HasValue(tumblerNumerals))
+				{
+					if (!colorsSet.Contains(tumblerNumerals))
+					{
+						colorsSet.Add(tumblerNumerals);
+						var tumbler = FindObjectOfType<KSP.UI.Screens.Tumbler>();
+						if (tumbler != null)
+						{
+							string[] tumblerNumeralsValues = configFile.config.GetValue(tumblerNumerals).Split(',');
+							tumbler.SetColor(new Color(float.Parse(tumblerNumeralsValues[0]), float.Parse(tumblerNumeralsValues[1]), float.Parse(tumblerNumeralsValues[2]), float.Parse(tumblerNumeralsValues[3])));
+						}
+					}
+				}
+
+
+				string PAWTitleBar = "PAWTitleBar";
+				if (configFile.config.HasValue(PAWTitleBar))
+				{
+					if (!colorsSet.Contains(PAWTitleBar))
+					{
+						colorsSet.Add(PAWTitleBar);
+						string[] PAWTitleBarValues = configFile.config.GetValue(PAWTitleBar).Split(',');
+						PAWTitleBar_color = new Color(float.Parse(PAWTitleBarValues[0]), float.Parse(PAWTitleBarValues[1]), float.Parse(PAWTitleBarValues[2]), float.Parse(PAWTitleBarValues[3]));
+						PAWTitleBar_replace = true;
+					}
+				}
+			}
+		}
 		private void SetCursor()
 		{
 			if (cursors != null && cursors[0] != null)
