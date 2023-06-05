@@ -246,7 +246,6 @@ namespace HUDReplacer
 			UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs(colorPathConfig);
 			if (configs.Length <= 0)
 			{
-				Debug.Log("HUDReplacer: No color configs found.");
 				return;
 			}
 			configs = configs.OrderByDescending(x => int.Parse(x.config.GetValue("priority"))).ToArray();
@@ -254,23 +253,6 @@ namespace HUDReplacer
 			foreach (UrlDir.UrlConfig configFile in configs)
 			{
 				int priority = int.Parse(configFile.config.GetValue("priority"));
-
-
-				string tumblerNumerals = "tumblerNumerals";
-				if (configFile.config.HasValue(tumblerNumerals))
-				{
-					if (!colorsSet.Contains(tumblerNumerals))
-					{
-						colorsSet.Add(tumblerNumerals);
-						var tumbler = FindObjectOfType<KSP.UI.Screens.Tumbler>();
-						if (tumbler != null)
-						{
-							string[] tumblerNumeralsValues = configFile.config.GetValue(tumblerNumerals).Split(',');
-							tumbler.SetColor(new Color(float.Parse(tumblerNumeralsValues[0]), float.Parse(tumblerNumeralsValues[1]), float.Parse(tumblerNumeralsValues[2]), float.Parse(tumblerNumeralsValues[3])));
-						}
-					}
-				}
-
 
 				string PAWTitleBar = "PAWTitleBar";
 				if (configFile.config.HasValue(PAWTitleBar))
@@ -284,6 +266,46 @@ namespace HUDReplacer
 					}
 				}
 			}
+		}
+
+		internal static void LoadTumblerColors()
+		{
+			UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs(colorPathConfig);
+			if (configs.Length <= 0)
+			{
+				return;
+			}
+			configs = configs.OrderByDescending(x => int.Parse(x.config.GetValue("priority"))).ToArray();
+			List<string> colorsSet = new List<string>();
+			foreach (UrlDir.UrlConfig configFile in configs)
+			{
+				int priority = int.Parse(configFile.config.GetValue("priority"));
+
+
+				string tumblerColorPositive = "tumblerColorPositive";
+				if (configFile.config.HasValue(tumblerColorPositive))
+				{
+					if (!colorsSet.Contains(tumblerColorPositive))
+					{
+						colorsSet.Add(tumblerColorPositive);
+						string[] values = configFile.config.GetValue(tumblerColorPositive).Split(',');
+						HarmonyPatches.TumblerColorReplacePositive = true;
+						HarmonyPatches.TumblerColorPositive = new Color(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]), float.Parse(values[3]));
+					}
+				}
+				string TumblerColorNegative = "tumblerColorNegative";
+				if (configFile.config.HasValue(TumblerColorNegative))
+				{
+					if (!colorsSet.Contains(TumblerColorNegative))
+					{
+						colorsSet.Add(TumblerColorNegative);
+						string[] values = configFile.config.GetValue(TumblerColorNegative).Split(',');
+						HarmonyPatches.TumblerColorReplaceNegative = true;
+						HarmonyPatches.TumblerColorNegative = new Color(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]), float.Parse(values[3]));
+					}
+				}
+			}
+			HarmonyPatches.TumblerColorsLoaded = true;
 		}
 		private void SetCursor()
 		{

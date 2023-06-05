@@ -22,12 +22,39 @@ namespace HUDReplacer
 		}
 
 
+		// Tumbler colors
+		internal static bool TumblerColorsLoaded = false;
+		internal static bool TumblerColorReplacePositive = false;
+		internal static bool TumblerColorReplaceNegative = false;
+		internal static Color TumblerColorPositive = Color.black;
+		internal static Color TumblerColorNegative = new Color(0.6f, 0f, 0f);
+
+		[HarmonyPatch(typeof(KSP.UI.Screens.Tumbler), "Awake")]
+		class Patch1
+		{
+			static void Prefix(ref Color ___positiveColor, ref Color ___negativeColor)
+			{
+				if (!TumblerColorsLoaded)
+				{
+					HUDReplacer.LoadTumblerColors();
+				}
+				if (TumblerColorReplacePositive)
+				{
+					___positiveColor = TumblerColorPositive;
+				}
+				if (TumblerColorReplaceNegative)
+				{
+					___negativeColor = TumblerColorNegative;
+				}
+			}
+		}
+
 		// PAW Title bar patch
 		internal static bool PAWTitleBar_replace = false;
 		internal static Color PAWTitleBar_color;
 
 		[HarmonyPatch(typeof(UIPartActionController), "CreatePartUI")]
-		class Patch1
+		class Patch2
 		{
 			static void Postfix(ref UIPartActionWindow __result)
 			{
@@ -52,9 +79,10 @@ namespace HUDReplacer
 		}
 
 
+
 		// KAL-1000 Editor patch
 		[HarmonyPatch(typeof(RoboticControllerWindow), nameof(RoboticControllerWindow.Spawn))]
-		class Patch2
+		class Patch3
 		{
 			static void Postfix(ref RoboticControllerWindow __result)
 			{
