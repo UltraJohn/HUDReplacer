@@ -1,7 +1,6 @@
-﻿using Assets._UI5.Rendering.Scripts;
-using Cursors;
+﻿using Cursors;
+using Expansions.Serenity;
 using HarmonyLib;
-using KSP.UI.Screens;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,18 +13,6 @@ using UnityEngine.UI;
 
 namespace HUDReplacer
 {
-	[KSPAddon(KSPAddon.Startup.MainMenu, true)]
-	public class HUDReplacerHarmony : MonoBehaviour
-	{
-		public void Awake()
-		{
-			// NOTE: A Harmony patcher should be placed in a run once Startup addon. The patch is kept between scene changes.
-			var harmony = new Harmony("UltraJohn.Mods.HUDReplacer");
-			harmony.PatchAll(Assembly.GetExecutingAssembly());
-		}
-	}
-	
-
 	[KSPAddon(KSPAddon.Startup.MainMenu, false)]
 	public class HUDReplacerMainMenu : HUDReplacer
 	{
@@ -48,6 +35,7 @@ namespace HUDReplacer
 	}
 	public partial class HUDReplacer : MonoBehaviour
 	{
+		internal static HUDReplacer instance;
 		internal static bool enableDebug = false;
 		private static Dictionary<string, string> images;
 		private static string filePathConfig = "HUDReplacer";
@@ -55,7 +43,7 @@ namespace HUDReplacer
 		private TextureCursor[] cursors;
 		public void Awake()
         {
-
+			instance = this;
 			Debug.Log("HUDReplacer: Running scene change. " + HighLogic.LoadedScene);
 			if (images == null)
 			{
@@ -156,34 +144,9 @@ namespace HUDReplacer
 			}
 
 		}
-		private static bool PAWTitleBar_replace = false;
-		private static Color PAWTitleBar_color;
 
-		[HarmonyPatch(typeof(UIPartActionController), "CreatePartUI")]
-		class Patch1
-		{
-			static void Postfix(ref UIPartActionWindow __result)
-			{
-				if (!PAWTitleBar_replace) return;
-				try
-				{
 
-					Image[] images = __result.gameObject.GetComponentsInChildren<Image>();
-					foreach(Image img in images)
-					{
-						if (img.mainTexture.name == "app_divider_pulldown_header_over")
-						{
-							img.color = PAWTitleBar_color;
-						}
-					}
-				}
-				catch(Exception e)
-				{
-					Debug.Log(e.ToString());
-				}
-			}
-		}
-
+		
 
 		private void GetTextures()
 		{
@@ -216,13 +179,16 @@ namespace HUDReplacer
 				}
 			}
 		}
-		private void ReplaceTextures()
+		internal void ReplaceTextures()
+		{
+			Texture2D[] tex_array = (Texture2D[])(object)Resources.FindObjectsOfTypeAll(typeof(Texture2D));
+			ReplaceTextures(tex_array);
+		}
+		internal void ReplaceTextures(Texture2D[] tex_array)
 		{
 			if (images.Count == 0) return;
 
 			string[] cursor_names = new string[] { "basicNeutral", "basicElectricLime", "basicDisabled" };
-
-			Texture2D[] tex_array = (Texture2D[])(object)Resources.FindObjectsOfTypeAll(typeof(Texture2D));
 
 			foreach (Texture2D tex in tex_array)
 			{
@@ -275,7 +241,7 @@ namespace HUDReplacer
 			this.Invoke(SetCursor, 1f);
 		}
 
-		private void LoadHUDColors()
+		internal void LoadHUDColors()
 		{
 			UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs(colorPathConfig);
 			if (configs.Length <= 0)
@@ -313,8 +279,8 @@ namespace HUDReplacer
 					{
 						colorsSet.Add(PAWTitleBar);
 						string[] PAWTitleBarValues = configFile.config.GetValue(PAWTitleBar).Split(',');
-						PAWTitleBar_color = new Color(float.Parse(PAWTitleBarValues[0]), float.Parse(PAWTitleBarValues[1]), float.Parse(PAWTitleBarValues[2]), float.Parse(PAWTitleBarValues[3]));
-						PAWTitleBar_replace = true;
+						HarmonyPatches.PAWTitleBar_color = new Color(float.Parse(PAWTitleBarValues[0]), float.Parse(PAWTitleBarValues[1]), float.Parse(PAWTitleBarValues[2]), float.Parse(PAWTitleBarValues[3]));
+						HarmonyPatches.PAWTitleBar_replace = true;
 					}
 				}
 			}
