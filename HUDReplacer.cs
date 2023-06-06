@@ -282,13 +282,13 @@ namespace HUDReplacer
 				int priority = int.Parse(configFile.config.GetValue("priority"));
 
 
-				string tumblerColorPositive = "tumblerColorPositive";
-				if (configFile.config.HasValue(tumblerColorPositive))
+				string TumblerColorPositive = "TumblerColorPositive";
+				if (configFile.config.HasValue(TumblerColorPositive))
 				{
-					if (!colorsSet.Contains(tumblerColorPositive))
+					if (!colorsSet.Contains(TumblerColorPositive))
 					{
-						colorsSet.Add(tumblerColorPositive);
-						string[] values = configFile.config.GetValue(tumblerColorPositive).Split(',');
+						colorsSet.Add(TumblerColorPositive);
+						string[] values = configFile.config.GetValue(TumblerColorPositive).Split(',');
 						HarmonyPatches.TumblerColorReplacePositive = true;
 						HarmonyPatches.TumblerColorPositive = new Color(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]), float.Parse(values[3]));
 					}
