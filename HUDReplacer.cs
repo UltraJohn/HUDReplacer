@@ -277,6 +277,30 @@ namespace HUDReplacer
 						HarmonyPatches.KALTitleBar_replace = true;
 					}
 				}
+
+				string gaugeNeedleYawPitchRoll = "gaugeNeedleYawPitchRoll";
+				if (configFile.config.HasValue(gaugeNeedleYawPitchRoll))
+				{
+					if (!colorsSet.Contains(gaugeNeedleYawPitchRoll))
+					{
+						colorsSet.Add(gaugeNeedleYawPitchRoll);
+						Color color = configFile.config.GetValue(gaugeNeedleYawPitchRoll).ToRGBA();
+						HarmonyPatches.gaugeNeedleYawPitchRollColor = color;
+						HarmonyPatches.gaugeNeedleYawPitchRollColor_replace = true;
+					}
+				}
+
+				string gaugeNeedleYawPitchRollPrecision = "gaugeNeedleYawPitchRollPrecision";
+				if (configFile.config.HasValue(gaugeNeedleYawPitchRollPrecision))
+				{
+					if (!colorsSet.Contains(gaugeNeedleYawPitchRollPrecision))
+					{
+						colorsSet.Add(gaugeNeedleYawPitchRollPrecision);
+						Color color = configFile.config.GetValue(gaugeNeedleYawPitchRollPrecision).ToRGBA();
+						HarmonyPatches.gaugeNeedleYawPitchRollPrecisionColor = color;
+						HarmonyPatches.gaugeNeedleYawPitchRollPrecisionColor_replace = true;
+					}
+				}
 			}
 		}
 

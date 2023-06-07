@@ -1,5 +1,8 @@
 ﻿using Expansions.Serenity;
 using HarmonyLib;
+using KSP.UI.Screens;
+using KSP.UI.Screens.Flight;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -101,6 +104,109 @@ namespace HUDReplacer
 				if (tex_array.Length > 0) HUDReplacer.instance.ReplaceTextures(tex_array);
 			}
 		}
+
+		// Yaw/Pitch/Roll + Precision mode
+		// gaugeNeedleYawPitchRoll
+		internal static bool gaugeNeedleYawPitchRollColor_replace = false;
+		internal static bool gaugeNeedleYawPitchRollPrecisionColor_replace = false;
+		internal static Color gaugeNeedleYawPitchRollColor;
+		internal static Color gaugeNeedleYawPitchRollPrecisionColor;
+
+		[HarmonyPatch(typeof(LinearControlGauges), nameof(LinearControlGauges.Start))]
+		class Patch4
+		{
+			static void Postfix(ref LinearControlGauges __instance, ref List<Image> ___inputGaugeImages)
+			{
+				if (!__instance) return;
+				if (!gaugeNeedleYawPitchRollColor_replace) return;
+				try
+				{
+					foreach (Image img in ___inputGaugeImages)
+					{
+						img.color = gaugeNeedleYawPitchRollColor;
+					}
+				}
+				catch (Exception e)
+				{
+					Debug.Log(e.ToString());
+				}
+			}
+		}
+
+		[HarmonyPatch(typeof(LinearControlGauges), "onPrecisionModeToggle")]
+		class Patch5
+		{
+			static void Postfix(ref LinearControlGauges __instance, ref bool precisionMode, ref List<Image> ___inputGaugeImages)
+			{
+				if (!__instance) return;
+				if (gaugeNeedleYawPitchRollColor_replace == false && gaugeNeedleYawPitchRollPrecisionColor_replace == false) return;
+				try
+				{
+					foreach(Image img in ___inputGaugeImages)
+					{
+						if (!precisionMode)
+						{
+							if(gaugeNeedleYawPitchRollColor_replace)
+							{
+								img.color = gaugeNeedleYawPitchRollColor;
+							}
+							
+						}
+						else
+						{
+							if(gaugeNeedleYawPitchRollPrecisionColor_replace)
+							{
+								img.color = gaugeNeedleYawPitchRollPrecisionColor;
+							}
+							
+						}
+					}
+				}
+				catch (Exception e)
+				{
+					Debug.Log(e.ToString());
+				}
+			}
+		}
+
+		/*
+		// GaugePitchPointer, GaugeRollPointer, GaugeYAW
+
+		// Vertical Speed Gauge
+		// GaugeNeedle & GaugeKnob
+
+
+		[HarmonyPatch(typeof(KSP.UI.Screens.LinearGauge), "Awake")]
+		class Patch4
+		{
+			static void Prefix(ref KSP.UI.Screens.LinearGauge __instance)
+			{
+				if (!__instance) return;
+				if(__instance.gameObject.name == "GaugeVerticalSpeed11111111111111111111111")
+				{
+					try
+					{
+						Image[] images = __instance.gameObject.GetComponentsInChildren<Image>();
+						foreach (Image img in images)
+						{
+							if (img.mainTexture.name == "GaugeKnob")
+							{
+								img.color = new Color(1,0,0,1);
+							}
+							if (img.mainTexture.name == "GaugePointer")
+							{
+								img.color = new Color(0,1,0,1);
+							}
+						}
+					}
+					catch (Exception e)
+					{
+						Debug.Log(e.ToString());
+					}
+				}
+			}
+		}
+		*/
 	}
 
 
