@@ -282,7 +282,7 @@ namespace HUDReplacer
 				int priority = int.Parse(configFile.config.GetValue("priority"));
 
 
-				string TumblerColorPositive = "TumblerColorPositive";
+				string TumblerColorPositive = "tumblerColorPositive";
 				if (configFile.config.HasValue(TumblerColorPositive))
 				{
 					if (!colorsSet.Contains(TumblerColorPositive))
