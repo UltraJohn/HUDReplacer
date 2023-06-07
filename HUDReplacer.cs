@@ -260,9 +260,21 @@ namespace HUDReplacer
 					if (!colorsSet.Contains(PAWTitleBar))
 					{
 						colorsSet.Add(PAWTitleBar);
-						string[] PAWTitleBarValues = configFile.config.GetValue(PAWTitleBar).Split(',');
-						HarmonyPatches.PAWTitleBar_color = new Color(float.Parse(PAWTitleBarValues[0]), float.Parse(PAWTitleBarValues[1]), float.Parse(PAWTitleBarValues[2]), float.Parse(PAWTitleBarValues[3]));
+						Color color = configFile.config.GetValue(PAWTitleBar).ToRGBA();
+						HarmonyPatches.PAWTitleBar_color = color;
 						HarmonyPatches.PAWTitleBar_replace = true;
+					}
+				}
+
+				string KALTitleBar = "KALTitleBar";
+				if (configFile.config.HasValue(KALTitleBar))
+				{
+					if (!colorsSet.Contains(KALTitleBar))
+					{
+						colorsSet.Add(KALTitleBar);
+						Color color = configFile.config.GetValue(KALTitleBar).ToRGBA();
+						HarmonyPatches.KALTitleBar_color = color;
+						HarmonyPatches.KALTitleBar_replace = true;
 					}
 				}
 			}
@@ -288,9 +300,9 @@ namespace HUDReplacer
 					if (!colorsSet.Contains(TumblerColorPositive))
 					{
 						colorsSet.Add(TumblerColorPositive);
-						string[] values = configFile.config.GetValue(TumblerColorPositive).Split(',');
+						Color color = configFile.config.GetValue(TumblerColorPositive).ToRGBA();
 						HarmonyPatches.TumblerColorReplacePositive = true;
-						HarmonyPatches.TumblerColorPositive = new Color(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]), float.Parse(values[3]));
+						HarmonyPatches.TumblerColorPositive = color;
 					}
 				}
 				string TumblerColorNegative = "tumblerColorNegative";
@@ -299,9 +311,9 @@ namespace HUDReplacer
 					if (!colorsSet.Contains(TumblerColorNegative))
 					{
 						colorsSet.Add(TumblerColorNegative);
-						string[] values = configFile.config.GetValue(TumblerColorNegative).Split(',');
+						Color color = configFile.config.GetValue(TumblerColorNegative).ToRGBA();
 						HarmonyPatches.TumblerColorReplaceNegative = true;
-						HarmonyPatches.TumblerColorNegative = new Color(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]), float.Parse(values[3]));
+						HarmonyPatches.TumblerColorNegative = color;
 					}
 				}
 			}
@@ -330,17 +342,6 @@ namespace HUDReplacer
 			return tc;
 		}
 
-		// Might be useful in the future, if it's possible to read textures from the game's data.
-		// It's currently blocked by the ImportFormat IsReadable flag.
-		// As it stands right now this is the problem:
-		// "Texture is not readable. The texture memory cannot be accessed from scripts."
-		private void DumpTexture(Texture2D tex)
-		{
-			string path = KSPUtil.ApplicationRootPath + "GameData/HUDReplacer/PluginData/Dump";
-			if (!Directory.Exists(path)){
-				Directory.CreateDirectory(path);
-			}
-			File.WriteAllBytes(path, tex.EncodeToPNG());
-		}
+
 	}
 }

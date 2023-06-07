@@ -77,10 +77,10 @@ namespace HUDReplacer
 				}
 			}
 		}
-
-
-
 		// KAL-1000 Editor patch
+		internal static bool KALTitleBar_replace = false;
+		internal static Color KALTitleBar_color;
+
 		[HarmonyPatch(typeof(RoboticControllerWindow), nameof(RoboticControllerWindow.Spawn))]
 		class Patch3
 		{
@@ -92,6 +92,10 @@ namespace HUDReplacer
 				foreach (Image img in image_array)
 				{
 					textures.Add((Texture2D)img.mainTexture);
+					if(img.mainTexture.name == "app_divider_pulldown_header_over" && KALTitleBar_replace)
+					{
+						img.color = KALTitleBar_color;
+					}
 				}
 				Texture2D[] tex_array = textures.ToArray();
 				if (tex_array.Length > 0) HUDReplacer.instance.ReplaceTextures(tex_array);
