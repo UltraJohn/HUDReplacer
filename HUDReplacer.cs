@@ -256,8 +256,7 @@ namespace HUDReplacer
 					if (!colorsSet.Contains(PAWTitleBar))
 					{
 						colorsSet.Add(PAWTitleBar);
-						Color color = configFile.config.GetValue(PAWTitleBar).ToRGBA();
-						HarmonyPatches.PAWTitleBar_color = color;
+						HarmonyPatches.PAWTitleBar_color = configFile.config.GetValue(PAWTitleBar).ToRGBA();
 						HarmonyPatches.PAWTitleBar_replace = true;
 					}
 				}
@@ -268,8 +267,7 @@ namespace HUDReplacer
 					if (!colorsSet.Contains(KALTitleBar))
 					{
 						colorsSet.Add(KALTitleBar);
-						Color color = configFile.config.GetValue(KALTitleBar).ToRGBA();
-						HarmonyPatches.KALTitleBar_color = color;
+						HarmonyPatches.KALTitleBar_color = configFile.config.GetValue(KALTitleBar).ToRGBA();
 						HarmonyPatches.KALTitleBar_replace = true;
 					}
 				}
@@ -280,8 +278,7 @@ namespace HUDReplacer
 					if (!colorsSet.Contains(gaugeNeedleYawPitchRoll))
 					{
 						colorsSet.Add(gaugeNeedleYawPitchRoll);
-						Color color = configFile.config.GetValue(gaugeNeedleYawPitchRoll).ToRGBA();
-						HarmonyPatches.gaugeNeedleYawPitchRollColor = color;
+						HarmonyPatches.gaugeNeedleYawPitchRollColor = configFile.config.GetValue(gaugeNeedleYawPitchRoll).ToRGBA();
 						HarmonyPatches.gaugeNeedleYawPitchRollColor_replace = true;
 					}
 				}
@@ -292,9 +289,36 @@ namespace HUDReplacer
 					if (!colorsSet.Contains(gaugeNeedleYawPitchRollPrecision))
 					{
 						colorsSet.Add(gaugeNeedleYawPitchRollPrecision);
-						Color color = configFile.config.GetValue(gaugeNeedleYawPitchRollPrecision).ToRGBA();
-						HarmonyPatches.gaugeNeedleYawPitchRollPrecisionColor = color;
+						HarmonyPatches.gaugeNeedleYawPitchRollPrecisionColor = configFile.config.GetValue(gaugeNeedleYawPitchRollPrecision).ToRGBA();
 						HarmonyPatches.gaugeNeedleYawPitchRollPrecisionColor_replace = true;
+					}
+				}
+
+				string METDisplayColorRed = "METDisplayColorRed";
+				if (configFile.config.HasValue(METDisplayColorRed))
+				{
+					if (!colorsSet.Contains(METDisplayColorRed))
+					{
+						colorsSet.Add(METDisplayColorRed);
+						HarmonyPatches.METDisplayColorRed = configFile.config.GetValue(METDisplayColorRed).ToRGBA();
+					}
+				}
+				string METDisplayColorYellow = "METDisplayColorYellow";
+				if (configFile.config.HasValue(METDisplayColorYellow))
+				{
+					if (!colorsSet.Contains(METDisplayColorYellow))
+					{
+						colorsSet.Add(METDisplayColorYellow);
+						HarmonyPatches.METDisplayColorYellow = configFile.config.GetValue(METDisplayColorYellow).ToRGBA();
+					}
+				}
+				string METDisplayColorGreen = "METDisplayColorGreen";
+				if (configFile.config.HasValue(METDisplayColorGreen))
+				{
+					if (!colorsSet.Contains(METDisplayColorGreen))
+					{
+						colorsSet.Add(METDisplayColorGreen);
+						HarmonyPatches.METDisplayColorGreen = configFile.config.GetValue(METDisplayColorGreen).ToRGBA();
 					}
 				}
 			}

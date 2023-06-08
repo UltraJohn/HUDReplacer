@@ -1,9 +1,11 @@
 ﻿using Expansions.Serenity;
 using HarmonyLib;
+using KSP.UI;
 using KSP.UI.Screens.Flight;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -163,6 +165,71 @@ namespace HUDReplacer
 				}
 			}
 		}
+
+		internal static Color METDisplayColorRed = Color.red;
+		internal static Color METDisplayColorYellow = Color.yellow;
+		internal static Color METDisplayColorGreen = Color.green;
+
+		internal static Color METDisplayRedColorOverride()
+		{
+			return METDisplayColorRed;
+		}
+		internal static Color METDisplayYellowColorOverride()
+		{
+			return METDisplayColorYellow;
+		}
+		internal static Color METDisplayGreenColorOverride()
+		{
+			return METDisplayColorGreen;
+		}
+
+		[HarmonyPatch(typeof(METDisplay), "LateUpdate")]
+		class Patch6
+		{
+			static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+			{
+				var getColorRed = AccessTools.Method(typeof(Color), "get_red");
+				var getColorYellow = AccessTools.Method(typeof(Color), "get_yellow");
+				var getColorGreen = AccessTools.Method(typeof(Color), "get_green");
+				foreach (var instruction in instructions)
+				{
+					if (instruction.Calls(getColorRed))
+					{
+						instruction.operand = AccessTools.Method(typeof(HarmonyPatches), nameof(HarmonyPatches.METDisplayRedColorOverride));
+					}
+					else if (instruction.Calls(getColorYellow))
+					{
+						instruction.operand = AccessTools.Method(typeof(HarmonyPatches), nameof(HarmonyPatches.METDisplayYellowColorOverride));
+					}
+					else if (instruction.Calls(getColorGreen))
+					{
+						instruction.operand = AccessTools.Method(typeof(HarmonyPatches), nameof(HarmonyPatches.METDisplayGreenColorOverride));
+					}
+					yield return instruction;
+				}
+			}
+		}
+
+		
+		[HarmonyPatch(typeof(UIPlanetariumDateTime), "Start")]
+		class Patch7
+		{
+			static void Postfix(ref UIPlanetariumDateTime __instance)
+			{
+				__instance.textDate.color = METDisplayColorGreen;
+			}
+		}
+		
+
+		[HarmonyPatch(typeof(UIPlanetariumDateTime), "onGameUnPause")]
+		class Patch8
+		{
+			static void Postfix(ref UIPlanetariumDateTime __instance)
+			{
+				__instance.textDate.color = METDisplayColorGreen;
+			}
+		}
+
 
 		/*
 		// GaugePitchPointer, GaugeRollPointer, GaugeYAW
