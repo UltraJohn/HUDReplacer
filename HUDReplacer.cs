@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -250,6 +251,29 @@ namespace HUDReplacer
 			{
 				int priority = int.Parse(configFile.config.GetValue("priority"));
 
+				string TumblerColorPositive = "tumblerColorPositive";
+				if (configFile.config.HasValue(TumblerColorPositive))
+				{
+					if (!colorsSet.Contains(TumblerColorPositive))
+					{
+						colorsSet.Add(TumblerColorPositive);
+						Color color = configFile.config.GetValue(TumblerColorPositive).ToRGBA();
+						HarmonyPatches.TumblerColorReplacePositive = true;
+						HarmonyPatches.TumblerColorPositive = color;
+					}
+				}
+				string TumblerColorNegative = "tumblerColorNegative";
+				if (configFile.config.HasValue(TumblerColorNegative))
+				{
+					if (!colorsSet.Contains(TumblerColorNegative))
+					{
+						colorsSet.Add(TumblerColorNegative);
+						Color color = configFile.config.GetValue(TumblerColorNegative).ToRGBA();
+						HarmonyPatches.TumblerColorReplaceNegative = true;
+						HarmonyPatches.TumblerColorNegative = color;
+					}
+				}
+
 				string PAWTitleBar = "PAWTitleBar";
 				if (configFile.config.HasValue(PAWTitleBar))
 				{
@@ -351,9 +375,59 @@ namespace HUDReplacer
 						HarmonyPatches.NavBallHeadingColor = configFile.config.GetValue(NavBallHeadingColor).ToRGBA();
 					}
 				}
+				string StageTotalDeltaVColor = "stageTotalDeltaVColor";
+				if (configFile.config.HasValue(StageTotalDeltaVColor))
+				{
+					if (!colorsSet.Contains(StageTotalDeltaVColor))
+					{
+						colorsSet.Add(StageTotalDeltaVColor);
+						HarmonyPatches.StageTotalDeltaVColorReplace = true;
+						HarmonyPatches.StageTotalDeltaVColor = configFile.config.GetValue(StageTotalDeltaVColor).ToRGBA();
+					}
+				}
+				string StageGroupDeltaVTextColor = "stageGroupDeltaVTextColor";
+				if (configFile.config.HasValue(StageGroupDeltaVTextColor))
+				{
+					if (!colorsSet.Contains(StageGroupDeltaVTextColor))
+					{
+						colorsSet.Add(StageGroupDeltaVTextColor);
+						HarmonyPatches.StageGroupDeltaVTextColorReplace = true;
+						HarmonyPatches.StageGroupDeltaVTextColor = configFile.config.GetValue(StageGroupDeltaVTextColor).ToRGBA();
+					}
+				}
+				string StageGroupDeltaVNumberColor = "stageGroupDeltaVNumberColor";
+				if (configFile.config.HasValue(StageGroupDeltaVNumberColor))
+				{
+					if (!colorsSet.Contains(StageGroupDeltaVNumberColor))
+					{
+						colorsSet.Add(StageGroupDeltaVNumberColor);
+						HarmonyPatches.StageGroupDeltaVNumberColorReplace = true;
+						HarmonyPatches.StageGroupDeltaVNumberColor = configFile.config.GetValue(StageGroupDeltaVNumberColor).ToRGBA();
+					}
+				}
+
+				string NavBallCursor = "navballCursor";
+				if (configFile.config.HasValue(NavBallCursor))
+				{
+					if (!colorsSet.Contains(NavBallCursor))
+					{
+						colorsSet.Add(NavBallCursor);
+						GameObject go = GameObject.Find("_UIMaster/MainCanvas/Flight/NavballFrame/IVAEVACollapseGroup/NavBallCursor");
+						if (go != null)
+						{
+							Image img = go.GetComponentInChildren<Image>();
+							if (img != null)
+							{
+								img.color = configFile.config.GetValue(NavBallCursor).ToRGBA();
+							}
+						}
+					}
+				}
+
+				
 			}
 		}
-
+		/*
 		internal static void LoadTumblerColors()
 		{
 			UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs(colorPathConfig);
@@ -393,6 +467,7 @@ namespace HUDReplacer
 			}
 			HarmonyPatches.TumblerColorsLoaded = true;
 		}
+		*/
 		private void SetCursor()
 		{
 			if (cursors != null && cursors[0] != null)

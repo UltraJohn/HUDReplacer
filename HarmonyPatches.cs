@@ -1,10 +1,12 @@
 ﻿using Expansions.Serenity;
 using HarmonyLib;
 using KSP.UI;
+using KSP.UI.Screens;
 using KSP.UI.Screens.Flight;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,7 +24,6 @@ namespace HUDReplacer
 
 
 		// Tumbler colors
-		internal static bool TumblerColorsLoaded = false;
 		internal static bool TumblerColorReplacePositive = false;
 		internal static bool TumblerColorReplaceNegative = false;
 		internal static Color TumblerColorPositive = Color.black;
@@ -33,10 +34,6 @@ namespace HUDReplacer
 		{
 			static void Prefix(ref Color ___positiveColor, ref Color ___negativeColor)
 			{
-				if (!TumblerColorsLoaded)
-				{
-					HUDReplacer.LoadTumblerColors();
-				}
 				if (TumblerColorReplacePositive)
 				{
 					___positiveColor = TumblerColorPositive;
@@ -165,6 +162,8 @@ namespace HUDReplacer
 			}
 		}
 
+		// Top left clock widget
+
 		internal static Color METDisplayColorRed = Color.red;
 		internal static Color METDisplayColorYellow = Color.yellow;
 		internal static Color METDisplayColorGreen = Color.green;
@@ -209,7 +208,8 @@ namespace HUDReplacer
 			}
 		}
 
-		
+		// Top left clock widget
+
 		[HarmonyPatch(typeof(UIPlanetariumDateTime), "Start")]
 		class Patch7
 		{
@@ -218,7 +218,8 @@ namespace HUDReplacer
 				__instance.textDate.color = METDisplayColorGreen;
 			}
 		}
-		
+
+		// Top left clock widget
 
 		[HarmonyPatch(typeof(UIPlanetariumDateTime), "onGameUnPause")]
 		class Patch8
@@ -228,6 +229,8 @@ namespace HUDReplacer
 				__instance.textDate.color = METDisplayColorGreen;
 			}
 		}
+
+		// NavBall speed display unit
 
 		internal static bool SpeedDisplayColorTextReplace = false;
 		internal static bool SpeedDisplayColorSpeedReplace = false;
@@ -250,6 +253,8 @@ namespace HUDReplacer
 			}
 		}
 
+		// NavBall heading unit
+
 		internal static bool NavBallHeadingColorReplace = false;
 		internal static Color NavBallHeadingColor = Color.green;
 
@@ -264,6 +269,48 @@ namespace HUDReplacer
 				}
 			}
 		}
+
+		// Stage Total deltaV
+		internal static bool StageTotalDeltaVColorReplace = false;
+		internal static Color StageTotalDeltaVColor = Color.white;
+
+		[HarmonyPatch(typeof(StageManager), "Awake")]
+		class Patch11
+		{
+			static void Postfix(ref StageManager __instance)
+			{
+				if (__instance && StageTotalDeltaVColorReplace)
+				{
+					__instance.deltaVTotalText.color = StageTotalDeltaVColor;
+				}
+			}
+		}
+
+		// Stage Group deltaV
+		internal static bool StageGroupDeltaVTextColorReplace = false;
+		internal static bool StageGroupDeltaVNumberColorReplace = false;
+		internal static Color StageGroupDeltaVTextColor = Color.white;
+		internal static Color StageGroupDeltaVNumberColor = Color.white;
+
+		[HarmonyPatch(typeof(StageGroup), "Awake")]
+		class Patch12
+		{
+			static void Postfix(ref StageGroup __instance, ref TextMeshProUGUI ___DeltaVHeadingText, ref TextMeshProUGUI ___uiStageIndex)
+			{
+				if (__instance)
+				{
+					if (StageGroupDeltaVTextColorReplace)
+					{
+						___DeltaVHeadingText.color = StageGroupDeltaVTextColor;
+					}
+					if (StageGroupDeltaVNumberColorReplace)
+					{
+						___uiStageIndex.color = StageGroupDeltaVNumberColor;
+					}
+				}
+			}
+		}
+
 
 		/*
 		// GaugePitchPointer, GaugeRollPointer, GaugeYAW
