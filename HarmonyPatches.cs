@@ -5,7 +5,6 @@ using KSP.UI.Screens.Flight;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Reflection.Emit;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -230,6 +229,41 @@ namespace HUDReplacer
 			}
 		}
 
+		internal static bool SpeedDisplayColorTextReplace = false;
+		internal static bool SpeedDisplayColorSpeedReplace = false;
+		internal static Color SpeedDisplayColorText = Color.green;
+		internal static Color SpeedDisplayColorSpeed = Color.green;
+
+		[HarmonyPatch(typeof(SpeedDisplay), "Start")]
+		class Patch9
+		{
+			static void Postfix(ref SpeedDisplay __instance)
+			{
+				if (SpeedDisplayColorTextReplace)
+				{
+					__instance.textTitle.color = SpeedDisplayColorText;
+				}
+				if (SpeedDisplayColorSpeedReplace)
+				{
+					__instance.textSpeed.color = SpeedDisplayColorSpeed;
+				}
+			}
+		}
+
+		internal static bool NavBallHeadingColorReplace = false;
+		internal static Color NavBallHeadingColor = Color.green;
+
+		[HarmonyPatch(typeof(NavBall), "Start")]
+		class Patch10
+		{
+			static void Postfix(ref NavBall __instance)
+			{
+				if (NavBallHeadingColorReplace)
+				{
+					__instance.headingText.color = NavBallHeadingColor;
+				}
+			}
+		}
 
 		/*
 		// GaugePitchPointer, GaugeRollPointer, GaugeYAW

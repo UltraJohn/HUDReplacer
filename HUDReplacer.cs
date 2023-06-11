@@ -321,6 +321,36 @@ namespace HUDReplacer
 						HarmonyPatches.METDisplayColorGreen = configFile.config.GetValue(METDisplayColorGreen).ToRGBA();
 					}
 				}
+				string SpeedDisplayColorTextReplace = "speedDisplayColorText";
+				if (configFile.config.HasValue(SpeedDisplayColorTextReplace))
+				{
+					if (!colorsSet.Contains(SpeedDisplayColorTextReplace))
+					{
+						colorsSet.Add(SpeedDisplayColorTextReplace);
+						HarmonyPatches.SpeedDisplayColorTextReplace = true;
+						HarmonyPatches.SpeedDisplayColorText = configFile.config.GetValue(SpeedDisplayColorTextReplace).ToRGBA();
+					}
+				}
+				string SpeedDisplayColorSpeedReplace = "speedDisplayColorSpeed";
+				if (configFile.config.HasValue(SpeedDisplayColorSpeedReplace))
+				{
+					if (!colorsSet.Contains(SpeedDisplayColorSpeedReplace))
+					{
+						colorsSet.Add(SpeedDisplayColorSpeedReplace);
+						HarmonyPatches.SpeedDisplayColorSpeedReplace = true;
+						HarmonyPatches.SpeedDisplayColorSpeed = configFile.config.GetValue(SpeedDisplayColorSpeedReplace).ToRGBA();
+					}
+				}
+				string NavBallHeadingColor = "navBallHeadingColor";
+				if (configFile.config.HasValue(NavBallHeadingColor))
+				{
+					if (!colorsSet.Contains(NavBallHeadingColor))
+					{
+						colorsSet.Add(NavBallHeadingColor);
+						HarmonyPatches.NavBallHeadingColorReplace = true;
+						HarmonyPatches.NavBallHeadingColor = configFile.config.GetValue(NavBallHeadingColor).ToRGBA();
+					}
+				}
 			}
 		}
 
