@@ -41,6 +41,13 @@ HUDReplacerRecolor:NEEDS[HUDReplacer]
 	METDisplayColorRed = 0,0,1,1
 	METDisplayColorYellow = 1,0,1,1
 	METDisplayColorGreen = 0,1,1,1
+	speedDisplayColorText = 1,0,0,1
+	speedDisplayColorSpeed = 1,1,0,1
+	navBallHeadingColor = 0,1,1,1
+	stageTotalDeltaVColor = 1,0,0,1
+	stageGroupDeltaVTextColor = 0,1,0,1
+	stageGroupDeltaVNumberColor = 0,0,1,1
+	navballCursor = 1,0,0,1
 }
 ```
 

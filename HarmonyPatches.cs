@@ -45,6 +45,22 @@ namespace HUDReplacer
 			}
 		}
 
+		[HarmonyPatch(typeof(StageTumbler), "Awake")]
+		class Patch1_2
+		{
+			static void Postfix(StageTumbler __instance)
+			{
+				if (TumblerColorReplacePositive)
+				{
+					MeshRenderer[] meshes = __instance.gameObject.GetComponentsInChildren<MeshRenderer>();
+					foreach(MeshRenderer mesh in meshes)
+					{
+						mesh.material.color = TumblerColorPositive;
+					}
+				}
+			}
+		}
+
 		// PAW Title bar patch
 		internal static bool PAWTitleBar_replace = false;
 		internal static Color PAWTitleBar_color;

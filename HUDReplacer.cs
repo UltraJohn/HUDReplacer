@@ -108,6 +108,21 @@ namespace HUDReplacer
 						}
 					}
 				}
+				if (Input.GetKeyUp(KeyCode.X))
+				{
+					KSP.UI.Screens.Tumbler[] tumblers = GetComponents<KSP.UI.Screens.Tumbler>();
+					foreach(var t in tumblers)
+					{
+						if (t.tumblerRenderers != null)
+						{
+							int num = t.tumblerRenderers.Length;
+							while (num-- > 0)
+							{
+								Color c = t.tumblerRenderers[num].material.color;
+							}
+						}
+					}
+				}
 				/*
 				if (Input.GetKeyUp(KeyCode.G))
 				{
