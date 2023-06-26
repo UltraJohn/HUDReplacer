@@ -394,7 +394,7 @@ namespace HUDReplacer
 					}
 				}
 
-				string VerticalSpeedGaugeNeedle = "VerticalSpeedGaugeNeedleColor";
+				string VerticalSpeedGaugeNeedle = "verticalSpeedGaugeNeedleColor";
 				if (configFile.config.HasValue(VerticalSpeedGaugeNeedle))
 				{
 					if (!colorsSet.Contains(VerticalSpeedGaugeNeedle))
