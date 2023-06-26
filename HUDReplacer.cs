@@ -108,51 +108,6 @@ namespace HUDReplacer
 						}
 					}
 				}
-				if (Input.GetKeyUp(KeyCode.X))
-				{
-					KSP.UI.Screens.Tumbler[] tumblers = GetComponents<KSP.UI.Screens.Tumbler>();
-					foreach(var t in tumblers)
-					{
-						if (t.tumblerRenderers != null)
-						{
-							int num = t.tumblerRenderers.Length;
-							while (num-- > 0)
-							{
-								Color c = t.tumblerRenderers[num].material.color;
-							}
-						}
-					}
-				}
-				/*
-				if (Input.GetKeyUp(KeyCode.G))
-				{
-
-					PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
-					eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-
-					List<RaycastResult> results = new List<RaycastResult>();
-					EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
-
-					Debug.Log("HUDReplacer: [][][][][][][][][][][][][][][][][]");
-					foreach (RaycastResult result in results)
-					{
-						try
-						{
-							Debug.Log("GameObject '" + result.gameObject.name + "' contains these components:");
-							string list = "";
-							foreach(Component comp in result.gameObject.GetComponents(typeof(Component))){
-								list+= comp.name+" & ";
-							}
-							list = list.TrimEnd(' ').TrimEnd('&');
-							Debug.Log(list);
-						}
-						catch (Exception e)
-						{
-							Debug.Log(e.ToString());
-						}
-					}
-				}
-				*/
 			}
 
 		}
@@ -439,7 +394,17 @@ namespace HUDReplacer
 					}
 				}
 
-				
+				string VerticalSpeedGaugeNeedle = "VerticalSpeedGaugeNeedleColor";
+				if (configFile.config.HasValue(VerticalSpeedGaugeNeedle))
+				{
+					if (!colorsSet.Contains(VerticalSpeedGaugeNeedle))
+					{
+						colorsSet.Add(VerticalSpeedGaugeNeedle);
+						HarmonyPatches.VerticalSpeedGaugeNeedleColorReplace = true;
+						HarmonyPatches.VerticalSpeedGaugeNeedleColor = configFile.config.GetValue(VerticalSpeedGaugeNeedle).ToRGBA();
+					}
+				}
+
 			}
 		}
 		/*

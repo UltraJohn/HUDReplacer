@@ -327,45 +327,21 @@ namespace HUDReplacer
 			}
 		}
 
+		internal static bool VerticalSpeedGaugeNeedleColorReplace = false;
+		internal static Color VerticalSpeedGaugeNeedleColor;
 
-		/*
-		// GaugePitchPointer, GaugeRollPointer, GaugeYAW
-
-		// Vertical Speed Gauge
-		// GaugeNeedle & GaugeKnob
-
-
-		[HarmonyPatch(typeof(KSP.UI.Screens.LinearGauge), "Awake")]
-		class Patch4
+		[HarmonyPatch(typeof(VerticalSpeedGauge), nameof(VerticalSpeedGauge.Start))]
+		class Patch13
 		{
-			static void Prefix(ref KSP.UI.Screens.LinearGauge __instance)
+			static void Postfix(ref VerticalSpeedGauge __instance)
 			{
-				if (!__instance) return;
-				if(__instance.gameObject.name == "GaugeVerticalSpeed11111111111111111111111")
+				if (VerticalSpeedGaugeNeedleColorReplace)
 				{
-					try
-					{
-						Image[] images = __instance.gameObject.GetComponentsInChildren<Image>();
-						foreach (Image img in images)
-						{
-							if (img.mainTexture.name == "GaugeKnob")
-							{
-								img.color = new Color(1,0,0,1);
-							}
-							if (img.mainTexture.name == "GaugePointer")
-							{
-								img.color = new Color(0,1,0,1);
-							}
-						}
-					}
-					catch (Exception e)
-					{
-						Debug.Log(e.ToString());
-					}
+					__instance.gauge.pointer.gameObject.GetComponentInChildren<Image>().color = VerticalSpeedGaugeNeedleColor;
 				}
 			}
 		}
-		*/
+
 	}
 
 
