@@ -48,6 +48,7 @@ HUDReplacerRecolor:NEEDS[HUDReplacer]
 	stageGroupDeltaVTextColor = 0,1,0,1
 	stageGroupDeltaVNumberColor = 0,0,1,1
 	navballCursor = 1,0,0,1
+	verticalSpeedGaugeNeedleColor = 0,0,1,1
 }
 ```
 
