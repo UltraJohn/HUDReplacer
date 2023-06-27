@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 namespace HUDReplacer
 {
-	[KSPAddon(KSPAddon.Startup.MainMenu, true)]
+	[KSPAddon(KSPAddon.Startup.Instantly, true)]
 	public class HarmonyPatches : MonoBehaviour
 	{
 		public void Awake()
