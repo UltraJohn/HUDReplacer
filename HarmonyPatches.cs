@@ -89,6 +89,21 @@ namespace HUDReplacer
 				}
 			}
 		}
+
+		// PAW Blue button
+		internal static bool PAWBlueButton_replace = false;
+		internal static Color PAWBlueButton_color;
+
+		[HarmonyPatch(typeof(UIPartActionButton), "Awake")]
+		class Patch2_1
+		{
+			static void Postfix(ref UIPartActionButton __instance)
+			{
+				if (!PAWBlueButton_replace) return;
+				__instance.button.GetComponent<Image>().color = PAWBlueButton_color;
+			}
+		}
+
 		// KAL-1000 Editor patch
 		internal static bool KALTitleBar_replace = false;
 		internal static Color KALTitleBar_color;

@@ -255,6 +255,17 @@ namespace HUDReplacer
 					}
 				}
 
+				string PAWBlueButton = "PAWBlueButton";
+				if (configFile.config.HasValue(PAWBlueButton))
+				{
+					if (!colorsSet.Contains(PAWBlueButton))
+					{
+						colorsSet.Add(PAWBlueButton);
+						HarmonyPatches.PAWBlueButton_replace = true;
+						HarmonyPatches.PAWBlueButton_color = configFile.config.GetValue(PAWBlueButton).ToRGBA();
+					}
+				}
+
 				string KALTitleBar = "KALTitleBar";
 				if (configFile.config.HasValue(KALTitleBar))
 				{
