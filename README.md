@@ -25,6 +25,7 @@ HUDReplacer:NEEDS[HUDReplacer]
   ```
   Priority of your texture pack in case of duplicate files. Higher number will take priority over other texture packs.
   ```
+  NOTE: It is recommended to use a directory named PluginData as your root folder for textures, as it will let KSP know not to load it into its GameDatabase. Since HUDReplacer loads textures directly from disk, there is no reason to also load it into the database, which just makes it load every texture twice, wasting memory.
 
 There is also the option for recoloring some specific UI elements, which are not colored through the texture itself, but rather the code. This is due to some elements changing color depending on whats currently happening, such as the top left clock that changes text color depending on the games lag/performance. Below is an example config for all the possible recolor options.
 
