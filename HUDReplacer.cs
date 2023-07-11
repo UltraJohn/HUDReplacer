@@ -299,6 +299,39 @@ namespace HUDReplacer
 					}
 				}
 
+				string PAWResourcePriorityIncrease = "PAWResourcePriorityIncrease";
+				if (configFile.config.HasValue(PAWResourcePriorityIncrease))
+				{
+					if (!colorsSet.Contains(PAWResourcePriorityIncrease))
+					{
+						colorsSet.Add(PAWResourcePriorityIncrease);
+						HarmonyPatches.PAWResourcePriorityIncrease_replace = true;
+						HarmonyPatches.PAWResourcePriorityIncrease_color = configFile.config.GetValue(PAWResourcePriorityIncrease).ToRGBA();
+					}
+				}
+
+				string PAWResourcePriorityDecrease = "PAWResourcePriorityDecrease";
+				if (configFile.config.HasValue(PAWResourcePriorityDecrease))
+				{
+					if (!colorsSet.Contains(PAWResourcePriorityDecrease))
+					{
+						colorsSet.Add(PAWResourcePriorityDecrease);
+						HarmonyPatches.PAWResourcePriorityDecrease_replace = true;
+						HarmonyPatches.PAWResourcePriorityDecrease_color = configFile.config.GetValue(PAWResourcePriorityDecrease).ToRGBA();
+					}
+				}
+
+				string PAWResourcePriorityReset = "PAWResourcePriorityReset";
+				if (configFile.config.HasValue(PAWResourcePriorityReset))
+				{
+					if (!colorsSet.Contains(PAWResourcePriorityReset))
+					{
+						colorsSet.Add(PAWResourcePriorityReset);
+						HarmonyPatches.PAWResourcePriorityReset_replace = true;
+						HarmonyPatches.PAWResourcePriorityReset_color = configFile.config.GetValue(PAWResourcePriorityReset).ToRGBA();
+					}
+				}
+
 				string KALTitleBar = "KALTitleBar";
 				if (configFile.config.HasValue(KALTitleBar))
 				{

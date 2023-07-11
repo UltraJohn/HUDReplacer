@@ -146,6 +146,34 @@ namespace HUDReplacer
 			}
 		}
 
+		// PAW Resource Priority Increase/Decrease/Reset Button
+		internal static bool PAWResourcePriorityIncrease_replace = false;
+		internal static Color PAWResourcePriorityIncrease_color;
+		internal static bool PAWResourcePriorityDecrease_replace = false;
+		internal static Color PAWResourcePriorityDecrease_color;
+		internal static bool PAWResourcePriorityReset_replace = false;
+		internal static Color PAWResourcePriorityReset_color;
+
+		[HarmonyPatch(typeof(UIPartActionResourcePriority), "Awake")]
+		class Patch2_4
+		{
+			static void Postfix(ref Button ___btnInc, ref Button ___btnDec, ref Button ___btnReset)
+			{
+				if (PAWResourcePriorityIncrease_replace)
+				{
+					___btnInc.GetComponent<Image>().color = PAWResourcePriorityIncrease_color;
+				}
+				if (PAWResourcePriorityDecrease_replace)
+				{
+					___btnDec.GetComponent<Image>().color = PAWResourcePriorityDecrease_color;
+				}
+				if (PAWResourcePriorityReset_replace)
+				{
+					___btnReset.GetComponent<Image>().color = PAWResourcePriorityReset_color;
+				}
+			}
+		}
+
 		// KAL-1000 Editor patch
 		internal static bool KALTitleBar_replace = false;
 		internal static Color KALTitleBar_color;
