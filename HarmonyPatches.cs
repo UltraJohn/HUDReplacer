@@ -104,6 +104,48 @@ namespace HUDReplacer
 			}
 		}
 
+		// PAW Blue button Toggle & Fuel Flow Buttons
+		internal static bool PAWBlueButtonToggle_replace = false;
+		internal static Color PAWBlueButtonToggle_color;
+
+		[HarmonyPatch(typeof(UIButtonToggle), "Awake")]
+		class Patch2_2
+		{
+			static void Postfix(ref UIButtonToggle __instance)
+			{
+				if (PAWBlueButtonToggle_replace)
+				{
+					if (__instance.toggleImage.mainTexture.name.Contains("Blue_Btn"))
+					{
+						__instance.toggleImage.color = PAWBlueButtonToggle_color;
+					}
+				}
+			}
+		}
+
+		// PAW Variant Selector Previous/Next Button
+		internal static bool PAWVariantSelectorNext_replace = false;
+		internal static Color PAWVariantSelectorNext_color;
+		internal static bool PAWVariantSelectorPrevious_replace = false;
+		internal static Color PAWVariantSelectorPrevious_color;
+
+		[HarmonyPatch(typeof(UIPartActionVariantSelector), nameof(UIPartActionVariantSelector.Setup))]
+		class Patch2_3
+		{
+			static void Postfix(ref UIPartActionVariantSelector __instance)
+			{
+				if (PAWVariantSelectorNext_replace)
+				{
+					__instance.buttonNext.GetComponent<Image>().color = PAWVariantSelectorNext_color;
+				}
+				if (PAWVariantSelectorPrevious_replace)
+				{
+					__instance.buttonPrevious.GetComponent<Image>().color = PAWVariantSelectorPrevious_color;
+				}
+
+			}
+		}
+
 		// KAL-1000 Editor patch
 		internal static bool KALTitleBar_replace = false;
 		internal static Color KALTitleBar_color;

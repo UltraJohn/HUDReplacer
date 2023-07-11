@@ -266,6 +266,39 @@ namespace HUDReplacer
 					}
 				}
 
+				string PAWBlueButtonToggle = "PAWBlueButtonToggle";
+				if (configFile.config.HasValue(PAWBlueButtonToggle))
+				{
+					if (!colorsSet.Contains(PAWBlueButtonToggle))
+					{
+						colorsSet.Add(PAWBlueButtonToggle);
+						HarmonyPatches.PAWBlueButtonToggle_replace = true;
+						HarmonyPatches.PAWBlueButtonToggle_color = configFile.config.GetValue(PAWBlueButtonToggle).ToRGBA();
+					}
+				}
+
+				string PAWVariantSelectorNext = "PAWVariantSelectorNext";
+				if (configFile.config.HasValue(PAWVariantSelectorNext))
+				{
+					if (!colorsSet.Contains(PAWVariantSelectorNext))
+					{
+						colorsSet.Add(PAWVariantSelectorNext);
+						HarmonyPatches.PAWVariantSelectorNext_replace = true;
+						HarmonyPatches.PAWVariantSelectorNext_color = configFile.config.GetValue(PAWVariantSelectorNext).ToRGBA();
+					}
+				}
+
+				string PAWVariantSelectorPrevious = "PAWVariantSelectorPrevious";
+				if (configFile.config.HasValue(PAWVariantSelectorPrevious))
+				{
+					if (!colorsSet.Contains(PAWVariantSelectorPrevious))
+					{
+						colorsSet.Add(PAWVariantSelectorPrevious);
+						HarmonyPatches.PAWVariantSelectorPrevious_replace = true;
+						HarmonyPatches.PAWVariantSelectorPrevious_color = configFile.config.GetValue(PAWVariantSelectorPrevious).ToRGBA();
+					}
+				}
+
 				string KALTitleBar = "KALTitleBar";
 				if (configFile.config.HasValue(KALTitleBar))
 				{
