@@ -390,8 +390,10 @@ namespace HUDReplacer
 		// Stage Group deltaV
 		internal static bool StageGroupDeltaVTextColorReplace = false;
 		internal static bool StageGroupDeltaVNumberColorReplace = false;
+		internal static bool StageGroupDeltaVBackgroundColorReplace = false;
 		internal static Color StageGroupDeltaVTextColor = Color.white;
 		internal static Color StageGroupDeltaVNumberColor = Color.white;
+		internal static Color StageGroupDeltaVBackgroundColor = Color.white;
 
 		[HarmonyPatch(typeof(StageGroup), "Awake")]
 		class Patch12
@@ -407,6 +409,17 @@ namespace HUDReplacer
 					if (StageGroupDeltaVNumberColorReplace)
 					{
 						___uiStageIndex.color = StageGroupDeltaVNumberColor;
+					}
+					if(StageGroupDeltaVBackgroundColorReplace)
+					{
+						Image[] images = __instance.GetComponentsInChildren<Image>();
+						foreach (Image img in images)
+						{
+							if(img.mainTexture.name == "StageDV")
+							{
+								img.color = StageGroupDeltaVBackgroundColor;
+							}
+						}
 					}
 				}
 			}

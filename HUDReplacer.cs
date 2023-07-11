@@ -374,6 +374,7 @@ namespace HUDReplacer
 						HarmonyPatches.METDisplayColorRed = configFile.config.GetValue(METDisplayColorRed).ToRGBA();
 					}
 				}
+
 				string METDisplayColorYellow = "METDisplayColorYellow";
 				if (configFile.config.HasValue(METDisplayColorYellow))
 				{
@@ -383,6 +384,7 @@ namespace HUDReplacer
 						HarmonyPatches.METDisplayColorYellow = configFile.config.GetValue(METDisplayColorYellow).ToRGBA();
 					}
 				}
+
 				string METDisplayColorGreen = "METDisplayColorGreen";
 				if (configFile.config.HasValue(METDisplayColorGreen))
 				{
@@ -392,6 +394,7 @@ namespace HUDReplacer
 						HarmonyPatches.METDisplayColorGreen = configFile.config.GetValue(METDisplayColorGreen).ToRGBA();
 					}
 				}
+
 				string SpeedDisplayColorTextReplace = "speedDisplayColorText";
 				if (configFile.config.HasValue(SpeedDisplayColorTextReplace))
 				{
@@ -402,6 +405,7 @@ namespace HUDReplacer
 						HarmonyPatches.SpeedDisplayColorText = configFile.config.GetValue(SpeedDisplayColorTextReplace).ToRGBA();
 					}
 				}
+
 				string SpeedDisplayColorSpeedReplace = "speedDisplayColorSpeed";
 				if (configFile.config.HasValue(SpeedDisplayColorSpeedReplace))
 				{
@@ -412,6 +416,7 @@ namespace HUDReplacer
 						HarmonyPatches.SpeedDisplayColorSpeed = configFile.config.GetValue(SpeedDisplayColorSpeedReplace).ToRGBA();
 					}
 				}
+
 				string NavBallHeadingColor = "navBallHeadingColor";
 				if (configFile.config.HasValue(NavBallHeadingColor))
 				{
@@ -422,6 +427,7 @@ namespace HUDReplacer
 						HarmonyPatches.NavBallHeadingColor = configFile.config.GetValue(NavBallHeadingColor).ToRGBA();
 					}
 				}
+
 				string StageTotalDeltaVColor = "stageTotalDeltaVColor";
 				if (configFile.config.HasValue(StageTotalDeltaVColor))
 				{
@@ -432,6 +438,7 @@ namespace HUDReplacer
 						HarmonyPatches.StageTotalDeltaVColor = configFile.config.GetValue(StageTotalDeltaVColor).ToRGBA();
 					}
 				}
+
 				string StageGroupDeltaVTextColor = "stageGroupDeltaVTextColor";
 				if (configFile.config.HasValue(StageGroupDeltaVTextColor))
 				{
@@ -442,6 +449,7 @@ namespace HUDReplacer
 						HarmonyPatches.StageGroupDeltaVTextColor = configFile.config.GetValue(StageGroupDeltaVTextColor).ToRGBA();
 					}
 				}
+
 				string StageGroupDeltaVNumberColor = "stageGroupDeltaVNumberColor";
 				if (configFile.config.HasValue(StageGroupDeltaVNumberColor))
 				{
@@ -450,6 +458,17 @@ namespace HUDReplacer
 						colorsSet.Add(StageGroupDeltaVNumberColor);
 						HarmonyPatches.StageGroupDeltaVNumberColorReplace = true;
 						HarmonyPatches.StageGroupDeltaVNumberColor = configFile.config.GetValue(StageGroupDeltaVNumberColor).ToRGBA();
+					}
+				}
+
+				string StageGroupDeltaVBackgroundColor = "stageGroupDeltaVBackgroundColor";
+				if (configFile.config.HasValue(StageGroupDeltaVBackgroundColor))
+				{
+					if (!colorsSet.Contains(StageGroupDeltaVBackgroundColor))
+					{
+						colorsSet.Add(StageGroupDeltaVBackgroundColor);
+						HarmonyPatches.StageGroupDeltaVBackgroundColorReplace = true;
+						HarmonyPatches.StageGroupDeltaVBackgroundColor = configFile.config.GetValue(StageGroupDeltaVBackgroundColor).ToRGBA();
 					}
 				}
 
