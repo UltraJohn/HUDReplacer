@@ -440,6 +440,25 @@ namespace HUDReplacer
 			}
 		}
 
+		internal static bool ManeuverNodeEditorTextColor_replace = false;
+		internal static Color ManeuverNodeEditorTextColor;
+
+		[HarmonyPatch(typeof(ManeuverNodeEditorTabOrbitBasic), "Start")]
+		class Patch14
+		{
+			static void Postfix(ref TextMeshProUGUI ___apoapsisAltitude, ref TextMeshProUGUI ___apoapsisTime, ref TextMeshProUGUI ___periapsisAltitude, ref TextMeshProUGUI ___periapsisTime, ref TextMeshProUGUI ___orbitPeriod)
+			{
+				if (ManeuverNodeEditorTextColor_replace)
+				{
+					___apoapsisAltitude.color = ManeuverNodeEditorTextColor;
+					___apoapsisTime.color = ManeuverNodeEditorTextColor;
+					___periapsisAltitude.color = ManeuverNodeEditorTextColor;
+					___periapsisTime.color = ManeuverNodeEditorTextColor;
+					___orbitPeriod.color = ManeuverNodeEditorTextColor;
+				}
+			}
+		}
+
 	}
 
 

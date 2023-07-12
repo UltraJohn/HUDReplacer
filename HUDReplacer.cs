@@ -501,6 +501,17 @@ namespace HUDReplacer
 					}
 				}
 
+				string ManeuverNodeEditorTextColor = "maneuverNodeEditorTextColor";
+				if (configFile.config.HasValue(ManeuverNodeEditorTextColor))
+				{
+					if (!colorsSet.Contains(ManeuverNodeEditorTextColor))
+					{
+						colorsSet.Add(ManeuverNodeEditorTextColor);
+						HarmonyPatches.ManeuverNodeEditorTextColor_replace = true;
+						HarmonyPatches.ManeuverNodeEditorTextColor = configFile.config.GetValue(ManeuverNodeEditorTextColor).ToRGBA();
+					}
+				}
+
 			}
 		}
 		/*
