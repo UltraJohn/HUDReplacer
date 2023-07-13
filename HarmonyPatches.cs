@@ -174,6 +174,46 @@ namespace HUDReplacer
 			}
 		}
 
+		// PAW Fuel Slider
+		internal static bool PAWFuelSliderColor_replace = false;
+		internal static Color PAWFuelSliderColor;
+		internal static bool PAWFuelSliderTextColor_replace = false;
+		internal static Color PAWFuelSliderTextColor;
+
+		[HarmonyPatch(typeof(UIPartActionResourceEditor), "Setup")]
+		class Patch2_5
+		{
+			static void Postfix(ref UIPartActionResourceEditor __instance)
+			{
+				if (PAWFuelSliderColor_replace)
+				{
+					__instance.slider.image.color = PAWFuelSliderColor;
+				}
+				if (PAWFuelSliderTextColor_replace)
+				{
+					__instance.resourceName.color = PAWFuelSliderTextColor;
+					__instance.resourceAmnt.color = PAWFuelSliderTextColor;
+					__instance.resourceMax.color = PAWFuelSliderTextColor;
+					foreach (Transform child in __instance.sliderContainer.transform)
+					{
+						if (child.name == "Slash")
+						{
+							child.GetComponent<TextMeshProUGUI>().color = PAWFuelSliderTextColor;
+						}
+						/* re-enable if background can't be colored through the texture itself
+						if (child.name == "Background")
+						{
+							child.GetComponent<Image>().color = Color.yellow;
+							break;
+						}
+						*/
+					}
+				}
+				
+
+			}
+		}
+
 		// KAL-1000 Editor patch
 		internal static bool KALTitleBar_replace = false;
 		internal static Color KALTitleBar_color;
@@ -421,6 +461,86 @@ namespace HUDReplacer
 							}
 						}
 					}
+				}
+			}
+		}
+
+
+		[HarmonyPatch(typeof(ProtoStageIconInfo), nameof(ProtoStageIconInfo.SetMsgTextColor))]
+		class Patch12_1
+		{
+			static bool Prefix(ref Color c)
+			{
+				// Text color
+				// Heat gauge
+				if(c == XKCDColors.OrangeYellow.A(0.6f))
+				{
+					c = Color.blue;
+					return true;
+				}
+				// Propellant gauge & RCS gauge
+				if (c == XKCDColors.ElectricLime.A(0.6f))
+				{
+					c = Color.red;
+					return true;
+				}
+				return true;
+			}
+		}
+
+		[HarmonyPatch(typeof(ProtoStageIconInfo), nameof(ProtoStageIconInfo.SetMsgBgColor))]
+		class Patch12_2
+		{
+			static void Prefix(ref Color c)
+			{
+				// Text background color
+				// Heat gauge
+				if (c == XKCDColors.DarkRed.A(0.6f))
+				{
+
+				}
+				// Propellant gauge & RCS gauge
+				if (c == XKCDColors.DarkLime.A(0.6f))
+				{
+
+				}
+			}
+		}
+
+		[HarmonyPatch(typeof(ProtoStageIconInfo), nameof(ProtoStageIconInfo.SetProgressBarColor))]
+		class Patch12_3
+		{
+			static void Prefix(ref Color c)
+			{
+				// Fill color
+				// Heat gauge
+				if (c == XKCDColors.OrangeYellow.A(0.6f))
+				{
+
+				}
+				// Propellant gauge & RCS gauge
+				if (c == XKCDColors.Yellow.A(0.6f))
+				{
+
+				}
+			}
+		}
+
+		[HarmonyPatch(typeof(ProtoStageIconInfo), nameof(ProtoStageIconInfo.SetProgressBarBgColor))]
+		class Patch12_4
+		{
+			static void Prefix(ref Color c)
+			{
+				// Fill background
+				// Heat gauge
+				if (c == XKCDColors.DarkRed.A(0.6f))
+				{
+
+				}
+				// Propellant gauge & RCS gauge
+				if (c == XKCDColors.DarkLime.A(0.6f))
+				{
+
 				}
 			}
 		}

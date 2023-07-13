@@ -332,6 +332,28 @@ namespace HUDReplacer
 					}
 				}
 
+				string PAWFuelSliderColor = "PAWFuelSliderColor";
+				if (configFile.config.HasValue(PAWFuelSliderColor))
+				{
+					if (!colorsSet.Contains(PAWFuelSliderColor))
+					{
+						colorsSet.Add(PAWFuelSliderColor);
+						HarmonyPatches.PAWFuelSliderColor_replace = true;
+						HarmonyPatches.PAWFuelSliderColor = configFile.config.GetValue(PAWFuelSliderColor).ToRGBA();
+					}
+				}
+
+				string PAWFuelSliderTextColor = "PAWFuelSliderTextColor";
+				if (configFile.config.HasValue(PAWFuelSliderTextColor))
+				{
+					if (!colorsSet.Contains(PAWFuelSliderTextColor))
+					{
+						colorsSet.Add(PAWFuelSliderTextColor);
+						HarmonyPatches.PAWFuelSliderTextColor_replace = true;
+						HarmonyPatches.PAWFuelSliderTextColor = configFile.config.GetValue(PAWFuelSliderTextColor).ToRGBA();
+					}
+				}
+
 				string KALTitleBar = "KALTitleBar";
 				if (configFile.config.HasValue(KALTitleBar))
 				{
