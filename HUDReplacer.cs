@@ -146,6 +146,7 @@ namespace HUDReplacer
 				}
 			}
 		}
+
 		internal void ReplaceTextures()
 		{
 			Texture2D[] tex_array = (Texture2D[])(object)Resources.FindObjectsOfTypeAll(typeof(Texture2D));
@@ -494,6 +495,94 @@ namespace HUDReplacer
 					}
 				}
 
+				string StageEngineFuelGaugeTextColor = "stageEngineFuelGaugeTextColor";
+				if (configFile.config.HasValue(StageEngineFuelGaugeTextColor))
+				{
+					if (!colorsSet.Contains(StageEngineFuelGaugeTextColor))
+					{
+						colorsSet.Add(StageEngineFuelGaugeTextColor);
+						HarmonyPatches.StageEngineFuelGaugeTextColor_replace = true;
+						HarmonyPatches.StageEngineFuelGaugeTextColor_color = configFile.config.GetValue(StageEngineFuelGaugeTextColor).ToRGBA();
+					}
+				}
+
+				string StageEngineHeatGaugeTextColor = "stageEngineHeatGaugeTextColor";
+				if (configFile.config.HasValue(StageEngineHeatGaugeTextColor))
+				{
+					if (!colorsSet.Contains(StageEngineHeatGaugeTextColor))
+					{
+						colorsSet.Add(StageEngineHeatGaugeTextColor);
+						HarmonyPatches.StageEngineHeatGaugeTextColor_replace = true;
+						HarmonyPatches.StageEngineHeatGaugeTextColor_color = configFile.config.GetValue(StageEngineHeatGaugeTextColor).ToRGBA();
+					}
+				}
+
+				string StageEngineFuelGaugeBackgroundColor = "stageEngineFuelGaugeBackgroundColor";
+				if (configFile.config.HasValue(StageEngineFuelGaugeBackgroundColor))
+				{
+					if (!colorsSet.Contains(StageEngineFuelGaugeBackgroundColor))
+					{
+						colorsSet.Add(StageEngineFuelGaugeBackgroundColor);
+						HarmonyPatches.StageEngineFuelGaugeBackgroundColor_replace = true;
+						HarmonyPatches.StageEngineFuelGaugeBackgroundColor_color = configFile.config.GetValue(StageEngineFuelGaugeBackgroundColor).ToRGBA();
+					}
+				}
+
+				string StageEngineHeatGaugeBackgroundColor = "stageEngineHeatGaugeBackgroundColor";
+				if (configFile.config.HasValue(StageEngineHeatGaugeBackgroundColor))
+				{
+					if (!colorsSet.Contains(StageEngineHeatGaugeBackgroundColor))
+					{
+						colorsSet.Add(StageEngineHeatGaugeBackgroundColor);
+						HarmonyPatches.StageEngineHeatGaugeBackgroundColor_replace = true;
+						HarmonyPatches.StageEngineHeatGaugeBackgroundColor_color = configFile.config.GetValue(StageEngineHeatGaugeBackgroundColor).ToRGBA();
+					}
+				}
+
+				string StageEngineFuelGaugeFillColor = "stageEngineFuelGaugeFillColor";
+				if (configFile.config.HasValue(StageEngineFuelGaugeFillColor))
+				{
+					if (!colorsSet.Contains(StageEngineFuelGaugeFillColor))
+					{
+						colorsSet.Add(StageEngineFuelGaugeFillColor);
+						HarmonyPatches.StageEngineFuelGaugeFillColor_replace = true;
+						HarmonyPatches.StageEngineFuelGaugeFillColor_color = configFile.config.GetValue(StageEngineFuelGaugeFillColor).ToRGBA();
+					}
+				}
+
+				string StageEngineHeatGaugeFillColor = "stageEngineHeatGaugeFillColor";
+				if (configFile.config.HasValue(StageEngineHeatGaugeFillColor))
+				{
+					if (!colorsSet.Contains(StageEngineHeatGaugeFillColor))
+					{
+						colorsSet.Add(StageEngineHeatGaugeFillColor);
+						HarmonyPatches.StageEngineHeatGaugeFillColor_replace = true;
+						HarmonyPatches.StageEngineHeatGaugeFillColor_color = configFile.config.GetValue(StageEngineHeatGaugeFillColor).ToRGBA();
+					}
+				}
+
+				string StageEngineFuelGaugeFillBackgroundColor = "stageEngineFuelGaugeFillBackgroundColor";
+				if (configFile.config.HasValue(StageEngineFuelGaugeFillBackgroundColor))
+				{
+					if (!colorsSet.Contains(StageEngineFuelGaugeFillBackgroundColor))
+					{
+						colorsSet.Add(StageEngineFuelGaugeFillBackgroundColor);
+						HarmonyPatches.StageEngineFuelGaugeFillBackgroundColor_replace = true;
+						HarmonyPatches.StageEngineFuelGaugeFillBackgroundColor_color = configFile.config.GetValue(StageEngineFuelGaugeFillBackgroundColor).ToRGBA();
+					}
+				}
+
+				string StageEngineHeatGaugeFillBackgroundColor = "stageEngineHeatGaugeFillBackgroundColor";
+				if (configFile.config.HasValue(StageEngineHeatGaugeFillBackgroundColor))
+				{
+					if (!colorsSet.Contains(StageEngineHeatGaugeFillBackgroundColor))
+					{
+						colorsSet.Add(StageEngineHeatGaugeFillBackgroundColor);
+						HarmonyPatches.StageEngineHeatGaugeFillBackgroundColor_replace = true;
+						HarmonyPatches.StageEngineHeatGaugeFillBackgroundColor_color = configFile.config.GetValue(StageEngineHeatGaugeFillBackgroundColor).ToRGBA();
+					}
+				}
+
 				string NavBallCursor = "navballCursor";
 				if (configFile.config.HasValue(NavBallCursor))
 				{
@@ -599,7 +688,5 @@ namespace HUDReplacer
 			tc.hotspot = new Vector2(6, 0);
 			return tc;
 		}
-
-
 	}
 }

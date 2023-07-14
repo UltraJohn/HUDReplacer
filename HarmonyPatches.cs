@@ -465,83 +465,136 @@ namespace HUDReplacer
 			}
 		}
 
+		// Stage Engine Fuel & Heat gauge (Text color)
+		internal static bool StageEngineFuelGaugeTextColor_replace = false;
+		internal static Color StageEngineFuelGaugeTextColor_color;
+		internal static bool StageEngineHeatGaugeTextColor_replace = false;
+		internal static Color StageEngineHeatGaugeTextColor_color;
 
 		[HarmonyPatch(typeof(ProtoStageIconInfo), nameof(ProtoStageIconInfo.SetMsgTextColor))]
 		class Patch12_1
 		{
 			static bool Prefix(ref Color c)
 			{
-				// Text color
-				// Heat gauge
-				if(c == XKCDColors.OrangeYellow.A(0.6f))
+				if (StageEngineFuelGaugeTextColor_replace)
 				{
-					c = Color.blue;
-					return true;
+					// Engine & RCS gauge
+					if (c == XKCDColors.ElectricLime.A(0.6f))
+					{
+						c = StageEngineFuelGaugeTextColor_color;
+						return true;
+					}
 				}
-				// Propellant gauge & RCS gauge
-				if (c == XKCDColors.ElectricLime.A(0.6f))
+				if (StageEngineHeatGaugeTextColor_replace)
 				{
-					c = Color.red;
-					return true;
+					// Heat gauge
+					if (c == XKCDColors.OrangeYellow.A(0.6f))
+					{
+						c = StageEngineHeatGaugeTextColor_color;
+						return true;
+					}
+				}
+				
+				return true;
+			}
+		}
+
+		// Stage Engine Fuel & Heat gauge (Background color)
+		internal static bool StageEngineFuelGaugeBackgroundColor_replace = false;
+		internal static Color StageEngineFuelGaugeBackgroundColor_color;
+		internal static bool StageEngineHeatGaugeBackgroundColor_replace = false;
+		internal static Color StageEngineHeatGaugeBackgroundColor_color;
+
+		[HarmonyPatch(typeof(ProtoStageIconInfo), nameof(ProtoStageIconInfo.SetMsgBgColor))]
+		class Patch12_2
+		{
+			static bool Prefix(ref Color c)
+			{
+				if (StageEngineFuelGaugeBackgroundColor_replace)
+				{
+					// Engine & RCS gauge
+					if (c == XKCDColors.DarkLime.A(0.6f))
+					{
+						c = StageEngineFuelGaugeBackgroundColor_color;
+						return true;
+					}
+				}
+				if (StageEngineHeatGaugeBackgroundColor_replace)
+				{
+					// Heat gauge
+					if (c == XKCDColors.DarkRed.A(0.6f))
+					{
+						c = StageEngineHeatGaugeBackgroundColor_color;
+						return true;
+					}
 				}
 				return true;
 			}
 		}
 
-		[HarmonyPatch(typeof(ProtoStageIconInfo), nameof(ProtoStageIconInfo.SetMsgBgColor))]
-		class Patch12_2
-		{
-			static void Prefix(ref Color c)
-			{
-				// Text background color
-				// Heat gauge
-				if (c == XKCDColors.DarkRed.A(0.6f))
-				{
-
-				}
-				// Propellant gauge & RCS gauge
-				if (c == XKCDColors.DarkLime.A(0.6f))
-				{
-
-				}
-			}
-		}
+		// Stage Engine Fuel & Heat gauge (Fill color)
+		internal static bool StageEngineFuelGaugeFillColor_replace = false;
+		internal static Color StageEngineFuelGaugeFillColor_color;
+		internal static bool StageEngineHeatGaugeFillColor_replace = false;
+		internal static Color StageEngineHeatGaugeFillColor_color;
 
 		[HarmonyPatch(typeof(ProtoStageIconInfo), nameof(ProtoStageIconInfo.SetProgressBarColor))]
 		class Patch12_3
 		{
-			static void Prefix(ref Color c)
+			static bool Prefix(ref Color c)
 			{
-				// Fill color
-				// Heat gauge
-				if (c == XKCDColors.OrangeYellow.A(0.6f))
+				if (StageEngineFuelGaugeFillColor_replace)
 				{
-
+					// Engine & RCS gauge
+					if (c == XKCDColors.Yellow.A(0.6f))
+					{
+						c = StageEngineFuelGaugeFillColor_color;
+						return true;
+					}
 				}
-				// Propellant gauge & RCS gauge
-				if (c == XKCDColors.Yellow.A(0.6f))
+				if (StageEngineHeatGaugeFillColor_replace)
 				{
-
+					// Heat gauge
+					if (c == XKCDColors.OrangeYellow.A(0.6f))
+					{
+						c = StageEngineHeatGaugeFillColor_color;
+						return true;
+					}
 				}
+				return true;
 			}
 		}
+
+		// Stage Engine Fuel & Heat gauge (Fill background color)
+		internal static bool StageEngineFuelGaugeFillBackgroundColor_replace = false;
+		internal static Color StageEngineFuelGaugeFillBackgroundColor_color;
+		internal static bool StageEngineHeatGaugeFillBackgroundColor_replace = false;
+		internal static Color StageEngineHeatGaugeFillBackgroundColor_color;
 
 		[HarmonyPatch(typeof(ProtoStageIconInfo), nameof(ProtoStageIconInfo.SetProgressBarBgColor))]
 		class Patch12_4
 		{
-			static void Prefix(ref Color c)
+			static bool Prefix(ref Color c)
 			{
-				// Fill background
-				// Heat gauge
-				if (c == XKCDColors.DarkRed.A(0.6f))
+				if (StageEngineFuelGaugeFillBackgroundColor_replace)
 				{
-
+					// Engine & RCS gauge
+					if (c == XKCDColors.DarkLime.A(0.6f))
+					{
+						c = StageEngineFuelGaugeFillBackgroundColor_color;
+						return true;
+					}
 				}
-				// Propellant gauge & RCS gauge
-				if (c == XKCDColors.DarkLime.A(0.6f))
+				if (StageEngineHeatGaugeFillBackgroundColor_replace)
 				{
-
+					// Heat gauge
+					if (c == XKCDColors.DarkRed.A(0.6f))
+					{
+						c = StageEngineHeatGaugeFillBackgroundColor_color;
+						return true;
+					}
 				}
+				return true;
 			}
 		}
 
@@ -578,7 +631,27 @@ namespace HUDReplacer
 				}
 			}
 		}
+		/*
+		Perhaps at some point we might tackle orbital lines
+		
+		[HarmonyPatch(typeof(OrbitRenderer), "GetNodeColour")]
+		class Patch15
+		{
+			static void Postfix()
+			{
+				Debug.Log("test");
+			}
+		}
 
+		[HarmonyPatch(typeof(OrbitRenderer), "GetOrbitColour")]
+		class Patch15_1
+		{
+			static void Postfix(ref OrbitRenderer __instance)
+			{
+				Debug.Log("test");
+			}
+		}
+		*/
 	}
 
 
