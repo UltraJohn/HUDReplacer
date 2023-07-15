@@ -631,6 +631,49 @@ namespace HUDReplacer
 				}
 			}
 		}
+
+		[HarmonyPatch(typeof(ManeuverNodeEditorTabOrbitAdv), "Start")]
+		class Patch14_1
+		{
+			static void Postfix(ref TextMeshProUGUI ___orbitArgumentOfPeriapsis, ref TextMeshProUGUI ___orbitLongitudeOfAscendingNode, ref TextMeshProUGUI ___ejectionAngle, ref TextMeshProUGUI ___orbitEccentricity, ref TextMeshProUGUI ___orbitInclination)
+			{
+				if (ManeuverNodeEditorTextColor_replace)
+				{
+					___orbitArgumentOfPeriapsis.color = ManeuverNodeEditorTextColor;
+					___orbitLongitudeOfAscendingNode.color = ManeuverNodeEditorTextColor;
+					___ejectionAngle.color = ManeuverNodeEditorTextColor;
+					___orbitEccentricity.color = ManeuverNodeEditorTextColor;
+					___orbitInclination.color = ManeuverNodeEditorTextColor;
+				}
+			}
+		}
+
+		[HarmonyPatch(typeof(ManeuverNodeEditorTabVectorInput), "Start")]
+		class Patch14_2
+		{
+			static void Postfix(ref TMP_InputField ___proRetrogradeField, ref TMP_InputField ___normalField, ref TMP_InputField ___radialField, ref TMP_InputField ___timeField)
+			{
+				if (ManeuverNodeEditorTextColor_replace)
+				{
+					___proRetrogradeField.textComponent.color = ManeuverNodeEditorTextColor;
+					___normalField.textComponent.color = ManeuverNodeEditorTextColor;
+					___radialField.textComponent.color = ManeuverNodeEditorTextColor;
+					___timeField.textComponent.color = ManeuverNodeEditorTextColor;
+				}
+			}
+		}
+
+		[HarmonyPatch(typeof(ManeuverNodeEditorTabVectorHandles), "Start")]
+		class Patch14_3
+		{
+			static void Postfix(ref TextMeshProUGUI ___sliderTimeDVString)
+			{
+				if (ManeuverNodeEditorTextColor_replace)
+				{
+					___sliderTimeDVString.color = ManeuverNodeEditorTextColor;
+				}
+			}
+		}
 		/*
 		Perhaps at some point we might tackle orbital lines
 		
