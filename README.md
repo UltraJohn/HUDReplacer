@@ -33,23 +33,42 @@ There is also the option for recoloring some specific UI elements, which are not
 HUDReplacerRecolor:NEEDS[HUDReplacer]
 {
 	priority = 1
-	tumblerColorPositive = 0,1,0,1 // RGBA values from 0-1
-	tumblerColorNegative = 0,0,1,1
-	PAWTitleBar = 0,0,1,1
-	KALTitleBar = 0,1,1,1
-	gaugeNeedleYawPitchRoll = 1,0,0,1
-	gaugeNeedleYawPitchRollPrecision = 0,1,0,1
-	METDisplayColorRed = 0,0,1,1
-	METDisplayColorYellow = 1,0,1,1
-	METDisplayColorGreen = 0,1,1,1
-	speedDisplayColorText = 1,0,0,1
-	speedDisplayColorSpeed = 1,1,0,1
-	navBallHeadingColor = 0,1,1,1
-	stageTotalDeltaVColor = 1,0,0,1
-	stageGroupDeltaVTextColor = 0,1,0,1
-	stageGroupDeltaVNumberColor = 0,0,1,1
-	navballCursor = 1,0,0,1
-	verticalSpeedGaugeNeedleColor = 0,0,1,1
+	tumblerColorPositive = 1,1,1,1
+	tumblerColorNegative = 1,1,1,1
+	PAWTitleBar = 1,1,1,1
+	PAWBlueButton = 1,1,1,1
+	PAWBlueButtonToggle = 1,1,1,1
+	PAWVariantSelectorNext = 1,1,1,1
+	PAWVariantSelectorPrevious = 1,1,1,1
+	PAWResourcePriorityIncrease = 1,1,1,1
+	PAWResourcePriorityDecrease = 1,1,1,1
+	PAWResourcePriorityReset = 1,1,1,1
+	PAWFuelSliderColor = 1,1,1,1
+	PAWFuelSliderTextColor = 1,1,1,1
+	KALTitleBar = 1,1,1,1
+	gaugeNeedleYawPitchRoll = 1,1,1,1
+	gaugeNeedleYawPitchRollPrecision = 1,1,1,1
+	METDisplayColorRed = 1,1,1,1
+	METDisplayColorYellow = 1,1,1,1
+	METDisplayColorGreen = 1,1,1,1
+	speedDisplayColorText = 1,1,1,1
+	navBallHeadingColor = 1,1,1,1
+	speedDisplayColorSpeed = 1,1,1,1
+	stageTotalDeltaVColor = 1,1,1,1
+	stageGroupDeltaVTextColor = 1,1,1,1
+	stageGroupDeltaVNumberColor = 1,1,1,1
+	stageGroupDeltaVBackgroundColor = 1,1,1,1
+	navballCursor = 1,1,1,1
+	verticalSpeedGaugeNeedleColor = 1,1,1,1
+	maneuverNodeEditorTextColor = 1,1,1,1
+	stageEngineFuelGaugeTextColor = 1,1,1,1
+	stageEngineHeatGaugeTextColor = 1,1,1,1
+	stageEngineFuelGaugeBackgroundColor = 1,1,1,1
+	stageEngineHeatGaugeBackgroundColor = 1,1,1,1
+	stageEngineFuelGaugeFillColor = 1,1,1,1
+	stageEngineHeatGaugeFillColor = 1,1,1,1
+	stageEngineFuelGaugeFillBackgroundColor = 1,1,1,1
+	stageEngineHeatGaugeFillBackgroundColor = 1,1,1,1
 }
 ```
 
