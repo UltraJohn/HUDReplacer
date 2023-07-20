@@ -5,6 +5,7 @@ using KSP.UI.Screens;
 using KSP.UI.Screens.Flight;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using TMPro;
 using UnityEngine;
@@ -671,6 +672,27 @@ namespace HUDReplacer
 				if (ManeuverNodeEditorTextColor_replace)
 				{
 					___sliderTimeDVString.color = ManeuverNodeEditorTextColor;
+				}
+			}
+		}
+
+		internal static string GaugeGeeFilePath = "";
+		internal static string GaugeThrottleFilePath = "";
+
+		[HarmonyPatch(typeof(NavBall), "Start")]
+		class Patch15
+		{
+			static void Postfix(ref NavBall __instance)
+			{
+				if(GaugeGeeFilePath != "")
+				{
+					Texture2D tex = (Texture2D)__instance.sideGaugeGee.mainTexture;
+					ImageConversion.LoadImage(tex, File.ReadAllBytes(GaugeGeeFilePath));
+				}
+				if(GaugeThrottleFilePath != "")
+				{
+					Texture2D tex = (Texture2D)__instance.sideGaugeThrottle.mainTexture;
+					ImageConversion.LoadImage(tex, File.ReadAllBytes(GaugeThrottleFilePath));
 				}
 			}
 		}

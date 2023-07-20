@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -108,6 +107,26 @@ namespace HUDReplacer
 						}
 					}
 				}
+				/*
+				It might be possible for a future update to allow modifying the sprite borders.
+				This would allow you to specify a "9-slice" size, which would fix the issue of improperly scaling the texture and causing blurry/distorted artifacts.
+				Currently not feasible, as a workaround for the readonly border property needs to be found.
+				More info: https://docs.unity3d.com/Manual/9SliceSprites.html
+
+				if (Input.GetKeyUp(KeyCode.A))
+				{
+					Texture2D[] tex_array = (Texture2D[])(object)Resources.FindObjectsOfTypeAll(typeof(Texture2D));
+					Sprite[] sprite_array = (Sprite[])(object)Resources.FindObjectsOfTypeAll(typeof(Sprite));
+					foreach(Sprite sprite in sprite_array)
+					{
+						if(sprite.name == "rect_round_color")
+						{
+							sprite.border = new Vector4(1,1,1,1);
+						}
+					}
+					Debug.Log("finished");
+				}
+				*/
 			}
 
 		}
@@ -157,6 +176,7 @@ namespace HUDReplacer
 			if (images.Count == 0) return;
 
 			string[] cursor_names = new string[] { "basicNeutral", "basicElectricLime", "basicDisabled" };
+			
 
 			foreach (Texture2D tex in tex_array)
 			{
@@ -180,6 +200,17 @@ namespace HUDReplacer
 								cursors = new TextureCursor[3];
 							}
 							cursors[cursor_names.IndexOf(key_stripped)] = CreateCursor(image.Value);
+							continue;
+						}
+						// NavBall GaugeGee and GaugeThrottle needs special handling as well
+						if(key_stripped == "GaugeGee")
+						{
+							HarmonyPatches.GaugeGeeFilePath = image.Value;
+							continue;
+						}
+						if(key_stripped == "GaugeThrottle")
+						{
+							HarmonyPatches.GaugeThrottleFilePath = image.Value;
 							continue;
 						}
 						if (key_stripped != image.Key)
