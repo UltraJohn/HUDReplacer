@@ -41,10 +41,11 @@ namespace HUDReplacer
         {
 			instance = this;
 			Debug.Log("HUDReplacer: Running scene change. " + HighLogic.LoadedScene);
-			if (images == null)
-			{
-				GetTextures();
-			}
+			// No longer cache on first load, as new 'onScene' config option will require a per-scene reload
+			//if (images == null)
+			//{
+			GetTextures();
+			//}
 			if (images.Count > 0)
 			{
 				Debug.Log("HUDReplacer: Replacing textures...");
@@ -149,6 +150,21 @@ namespace HUDReplacer
 			foreach(UrlDir.UrlConfig configFile in configs)
 			{
 				string filePath = configFile.config.GetValue("filePath");
+				string onScene = configFile.config.HasValue("onScene") ? configFile.config.GetValue("onScene") : "";
+
+				if(onScene != "")
+				{
+					try
+					{
+						GameScenes scene = (GameScenes)Enum.Parse(typeof(GameScenes), onScene);
+						if (HighLogic.LoadedScene != scene) continue;
+					}
+					catch (Exception e)
+					{
+						Debug.LogError("HUDReplacer: Error loading onScene variable '" + onScene + "' from filePath: " + filePath);
+					}
+				}
+				
 				int priority = int.Parse(configFile.config.GetValue("priority"));
 				Debug.Log("HUDReplacer: path " + filePath + " - priority: "+priority);
 				//string[] files = Directory.GetFiles(filePath, "*.png");
@@ -180,6 +196,11 @@ namespace HUDReplacer
 
 			foreach (Texture2D tex in tex_array)
 			{
+				string tex_name_stripped = tex.name;
+				if(tex_name_stripped.Contains('/')) // weird RP1 case. May also happen with other mods
+				{
+					tex_name_stripped = tex_name_stripped.Split('/').Last();
+				}
 				foreach (KeyValuePair<string, string> image in images)
 				{
 					string key_stripped = image.Key;
@@ -190,7 +211,7 @@ namespace HUDReplacer
 						// For these special cases, we save the width and height in the filename, appended by a # to tell the program this is a multi-texture.
 						key_stripped = image.Key.Substring(0, image.Key.IndexOf("#", StringComparison.Ordinal));
 					}
-					if(key_stripped == tex.name)
+					if(key_stripped == tex_name_stripped)
 					{
 						// For the mouse cursor
 						if (cursor_names.Contains(key_stripped))
