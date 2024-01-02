@@ -29,6 +29,7 @@ HUDReplacer:NEEDS[HUDReplacer]
 * <strong>onScene (optional)</strong> <em>\<int></em>
   ```
   Specify a scene to only load this directory in. Useful if you want to change the visuals of the same texture depending on scene. Priority is still taken into consideration for this.
+  Valid options are: LOADING, LOADINGBUFFER, MAINMENU, SETTINGS, CREDITS, SPACECENTER, EDITOR, FLIGHT, TRACKSTATION, PSYSTEM, MISSIONBUILDER
   ```
   NOTE: It is recommended to use a directory named PluginData as your root folder for textures, as it will let KSP know not to load it into its GameDatabase. Since HUDReplacer loads textures directly from disk, there is no reason to also load it into the database, which just makes it load every texture twice, wasting memory.
 
