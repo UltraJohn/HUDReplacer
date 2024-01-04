@@ -675,6 +675,50 @@ namespace HUDReplacer
 					}
 				}
 
+				string SASDisplayOnColor = "SASDisplayOnColor";
+				if (configFile.config.HasValue(SASDisplayOnColor))
+				{
+					if (!colorsSet.Contains(SASDisplayOnColor))
+					{
+						colorsSet.Add(SASDisplayOnColor);
+						HarmonyPatches.SASDisplayColor_SAS_Replace_On = true;
+						HarmonyPatches.SASDisplayColor_SAS_On_color = configFile.config.GetValue(SASDisplayOnColor).ToRGBA();
+					}
+				}
+
+				string SASDisplayOffColor = "SASDisplayOffColor";
+				if (configFile.config.HasValue(SASDisplayOffColor))
+				{
+					if (!colorsSet.Contains(SASDisplayOffColor))
+					{
+						colorsSet.Add(SASDisplayOffColor);
+						HarmonyPatches.SASDisplayColor_SAS_Replace_Off = true;
+						HarmonyPatches.SASDisplayColor_SAS_Off_color = configFile.config.GetValue(SASDisplayOffColor).ToRGBA();
+					}
+				}
+
+				string RCSDisplayOnColor = "RCSDisplayOnColor";
+				if (configFile.config.HasValue(RCSDisplayOnColor))
+				{
+					if (!colorsSet.Contains(RCSDisplayOnColor))
+					{
+						colorsSet.Add(RCSDisplayOnColor);
+						HarmonyPatches.RCSDisplayColor_RCS_Replace_On = true;
+						HarmonyPatches.RCSDisplayColor_RCS_On_color = configFile.config.GetValue(RCSDisplayOnColor).ToRGBA();
+					}
+				}
+
+				string RCSDisplayOffColor = "RCSDisplayOffColor";
+				if (configFile.config.HasValue(RCSDisplayOffColor))
+				{
+					if (!colorsSet.Contains(RCSDisplayOffColor))
+					{
+						colorsSet.Add(RCSDisplayOffColor);
+						HarmonyPatches.RCSDisplayColor_RCS_Replace_Off = true;
+						HarmonyPatches.RCSDisplayColor_RCS_Off_color = configFile.config.GetValue(RCSDisplayOffColor).ToRGBA();
+					}
+				}
+
 			}
 		}
 		/*

@@ -10,6 +10,7 @@ using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static Kerbal;
 
 namespace HUDReplacer
 {
@@ -693,6 +694,78 @@ namespace HUDReplacer
 				{
 					Texture2D tex = (Texture2D)__instance.sideGaugeThrottle.mainTexture;
 					ImageConversion.LoadImage(tex, File.ReadAllBytes(GaugeThrottleFilePath));
+				}
+			}
+		}
+
+		internal static bool SASDisplayColor_SAS_Replace_On = false;
+		internal static bool SASDisplayColor_SAS_Replace_Off = false;
+		internal static bool RCSDisplayColor_RCS_Replace_On = false;
+		internal static bool RCSDisplayColor_RCS_Replace_Off = false;
+		internal static Color SASDisplayColor_SAS_On_color;
+		internal static Color SASDisplayColor_SAS_Off_color;
+		internal static Color RCSDisplayColor_RCS_On_color;
+		internal static Color RCSDisplayColor_RCS_Off_color;
+
+		[HarmonyPatch(typeof(SASDisplay), "Start")]
+		class Patch16
+		{
+			static void Postfix(ref SASDisplay __instance)
+			{
+				UIStateText.TextState[] states = __instance.stateText.states;
+				if(states == null)
+				{
+					Debug.LogError("HUDReplacer: no states found for SASDisplay.stateText.states");
+					return;
+				}
+				int num = states.Length;
+				while (num-- > 0)
+				{
+					if (states[num].name == "On")
+					{
+						if (SASDisplayColor_SAS_Replace_On)
+						{
+							states[num].textColor = SASDisplayColor_SAS_On_color;
+						}
+					}
+					if (states[num].name == "Off")
+					{
+						if (SASDisplayColor_SAS_Replace_Off)
+						{
+							states[num].textColor = SASDisplayColor_SAS_Off_color;
+						}
+					}
+				}
+			}
+		}
+		[HarmonyPatch(typeof(RCSDisplay), "Start")]
+		class Patch16_2
+		{
+			static void Postfix(ref RCSDisplay __instance)
+			{
+				UIStateText.TextState[] states = __instance.stateText.states;
+				if (states == null)
+				{
+					Debug.LogError("HUDReplacer: no states found for RCSDisplay.stateText.states");
+					return;
+				}
+				int num = states.Length;
+				while (num-- > 0)
+				{
+					if (states[num].name == "On")
+					{
+						if (RCSDisplayColor_RCS_Replace_On)
+						{
+							states[num].textColor = RCSDisplayColor_RCS_On_color;
+						}
+					}
+					if (states[num].name == "Off")
+					{
+						if (RCSDisplayColor_RCS_Replace_Off)
+						{
+							states[num].textColor = RCSDisplayColor_RCS_Off_color;
+						}
+					}
 				}
 			}
 		}
