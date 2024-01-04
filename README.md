@@ -75,6 +75,10 @@ HUDReplacerRecolor:NEEDS[HUDReplacer]
 	stageEngineHeatGaugeFillColor = 1,1,1,1
 	stageEngineFuelGaugeFillBackgroundColor = 1,1,1,1
 	stageEngineHeatGaugeFillBackgroundColor = 1,1,1,1
+	SASDisplayOnColor = 1,1,1,1
+	SASDisplayOffColor = 1,1,1,1
+	RCSDisplayOnColor = 1,1,1,1
+	RCSDisplayOffColor = 1,1,1,1
 }
 ```
 
