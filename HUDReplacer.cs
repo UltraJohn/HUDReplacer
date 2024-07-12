@@ -718,7 +718,105 @@ namespace HUDReplacer
 						HarmonyPatches.RCSDisplayColor_RCS_Off_color = configFile.config.GetValue(RCSDisplayOffColor).ToRGBA();
 					}
 				}
+				
+				string EditorCategoryButtonColor = "EditorCategoryButtonColor";
+				if (configFile.config.HasValue(EditorCategoryButtonColor))
+				{
+					if (!colorsSet.Contains(EditorCategoryButtonColor))
+					{
+						colorsSet.Add(EditorCategoryButtonColor);
+						HarmonyPatches.EditorCategoryButtonColor_replace = true;
+						HarmonyPatches.EditorCategoryButtonColor_color = configFile.config.GetValue(EditorCategoryButtonColor).ToRGBA();
+					}
+				}
 
+				string EditorCategoryButtonColor_Module = "EditorCategoryModuleButtonColor";
+				if (configFile.config.HasValue(EditorCategoryButtonColor_Module))
+				{
+					if (!colorsSet.Contains(EditorCategoryButtonColor_Module))
+					{
+						colorsSet.Add(EditorCategoryButtonColor_Module);
+						HarmonyPatches.EditorCategoryButtonColor_Module_replace = true;
+						HarmonyPatches.EditorCategoryButtonColor_Module_color = configFile.config.GetValue(EditorCategoryButtonColor_Module).ToRGBA();
+					}
+				}
+
+				string EditorCategoryButtonColor_Resource = "EditorCategoryResourceButtonColor";
+				if (configFile.config.HasValue(EditorCategoryButtonColor_Resource))
+				{
+					if (!colorsSet.Contains(EditorCategoryButtonColor_Resource))
+					{
+						colorsSet.Add(EditorCategoryButtonColor_Resource);
+						HarmonyPatches.EditorCategoryButtonColor_Resource_replace = true;
+						HarmonyPatches.EditorCategoryButtonColor_Resource_color = configFile.config.GetValue(EditorCategoryButtonColor_Resource).ToRGBA();
+					}
+				}
+
+				string EditorCategoryButtonColor_Manufacturer = "EditorCategoryManufacturerButtonColor";
+				if (configFile.config.HasValue(EditorCategoryButtonColor_Manufacturer))
+				{
+					if (!colorsSet.Contains(EditorCategoryButtonColor_Manufacturer))
+					{
+						colorsSet.Add(EditorCategoryButtonColor_Manufacturer);
+						HarmonyPatches.EditorCategoryButtonColor_Manufacturer_replace = true;
+						HarmonyPatches.EditorCategoryButtonColor_Manufacturer_color = configFile.config.GetValue(EditorCategoryButtonColor_Manufacturer).ToRGBA();
+					}
+				}
+
+				string EditorCategoryButtonColor_Tech = "EditorCategoryTechButtonColor";
+				if (configFile.config.HasValue(EditorCategoryButtonColor_Tech))
+				{
+					if (!colorsSet.Contains(EditorCategoryButtonColor_Tech))
+					{
+						colorsSet.Add(EditorCategoryButtonColor_Tech);
+						HarmonyPatches.EditorCategoryButtonColor_Tech_replace = true;
+						HarmonyPatches.EditorCategoryButtonColor_Tech_color = configFile.config.GetValue(EditorCategoryButtonColor_Tech).ToRGBA();
+					}
+				}
+
+				string EditorCategoryButtonColor_Profile = "EditorCategoryProfileButtonColor";
+				if (configFile.config.HasValue(EditorCategoryButtonColor_Profile))
+				{
+					if (!colorsSet.Contains(EditorCategoryButtonColor_Profile))
+					{
+						colorsSet.Add(EditorCategoryButtonColor_Profile);
+						HarmonyPatches.EditorCategoryButtonColor_Profile_replace = true;
+						HarmonyPatches.EditorCategoryButtonColor_Profile_color = configFile.config.GetValue(EditorCategoryButtonColor_Profile).ToRGBA();
+					}
+				}
+
+				string EditorCategoryButtonColor_Subassembly = "EditorCategorySubassemblyButtonColor";
+				if (configFile.config.HasValue(EditorCategoryButtonColor_Subassembly))
+				{
+					if (!colorsSet.Contains(EditorCategoryButtonColor_Subassembly))
+					{
+						colorsSet.Add(EditorCategoryButtonColor_Subassembly);
+						HarmonyPatches.EditorCategoryButtonColor_Subassembly_replace = true;
+						HarmonyPatches.EditorCategoryButtonColor_Subassembly_color = configFile.config.GetValue(EditorCategoryButtonColor_Subassembly).ToRGBA();
+					}
+				}
+
+				string EditorCategoryButtonColor_Variants = "EditorCategoryVariantsButtonColor";
+				if (configFile.config.HasValue(EditorCategoryButtonColor_Variants))
+				{
+					if (!colorsSet.Contains(EditorCategoryButtonColor_Variants))
+					{
+						colorsSet.Add(EditorCategoryButtonColor_Variants);
+						HarmonyPatches.EditorCategoryButtonColor_Variants_replace = true;
+						HarmonyPatches.EditorCategoryButtonColor_Variants_color = configFile.config.GetValue(EditorCategoryButtonColor_Variants).ToRGBA();
+					}
+				}
+
+				string EditorCategoryButtonColor_Custom = "EditorCategoryCustomButtonColor";
+				if (configFile.config.HasValue(EditorCategoryButtonColor_Custom))
+				{
+					if (!colorsSet.Contains(EditorCategoryButtonColor_Custom))
+					{
+						colorsSet.Add(EditorCategoryButtonColor_Custom);
+						HarmonyPatches.EditorCategoryButtonColor_Custom_replace = true;
+						HarmonyPatches.EditorCategoryButtonColor_Custom_color = configFile.config.GetValue(EditorCategoryButtonColor_Custom).ToRGBA();
+					}
+				}
 			}
 		}
 		/*
