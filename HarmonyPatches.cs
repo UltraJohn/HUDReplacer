@@ -769,6 +769,68 @@ namespace HUDReplacer
 				}
 			}
 		}
+
+		internal static bool EditorCategoryButtonColor_replace = false;
+		internal static bool EditorCategoryButtonColor_Module_replace = false;
+		internal static bool EditorCategoryButtonColor_Resource_replace = false;
+		internal static bool EditorCategoryButtonColor_Manufacturer_replace = false;
+		internal static bool EditorCategoryButtonColor_Tech_replace = false;
+		internal static bool EditorCategoryButtonColor_Profile_replace = false;
+		internal static bool EditorCategoryButtonColor_Subassembly_replace = false;
+		internal static bool EditorCategoryButtonColor_Variants_replace = false;
+		internal static bool EditorCategoryButtonColor_Custom_replace = false;
+		internal static Color EditorCategoryButtonColor_color;
+		internal static Color EditorCategoryButtonColor_Module_color;
+		internal static Color EditorCategoryButtonColor_Resource_color;
+		internal static Color EditorCategoryButtonColor_Manufacturer_color;
+		internal static Color EditorCategoryButtonColor_Tech_color;
+		internal static Color EditorCategoryButtonColor_Profile_color;
+		internal static Color EditorCategoryButtonColor_Subassembly_color;
+		internal static Color EditorCategoryButtonColor_Variants_color;
+		internal static Color EditorCategoryButtonColor_Custom_color;
+
+		[HarmonyPatch(typeof(PartCategorizer), "Setup")]
+		class Patch17 {
+			static void Prefix(ref PartCategorizer __instance)
+			{
+				if (EditorCategoryButtonColor_replace)
+				{
+					__instance.colorFilterFunction = EditorCategoryButtonColor_color;
+				}
+				if (EditorCategoryButtonColor_Module_replace)
+				{
+					__instance.colorFilterModule = EditorCategoryButtonColor_Module_color;
+				}
+				if (EditorCategoryButtonColor_Resource_replace)
+				{
+					__instance.colorFilterResource = EditorCategoryButtonColor_Resource_color;
+				}
+				if (EditorCategoryButtonColor_Manufacturer_replace)
+				{
+					__instance.colorFilterManufacturer = EditorCategoryButtonColor_Manufacturer_color;
+				}
+				if (EditorCategoryButtonColor_Tech_replace)
+				{
+					__instance.colorFilterTech = EditorCategoryButtonColor_Tech_color;
+				}
+				if (EditorCategoryButtonColor_Profile_replace)
+				{
+					__instance.colorFilterProfile = EditorCategoryButtonColor_Profile_color;
+				}
+				if (EditorCategoryButtonColor_Subassembly_replace)
+				{
+					__instance.colorSubassembly = EditorCategoryButtonColor_Subassembly_color;
+				}
+				if (EditorCategoryButtonColor_Variants_replace)
+				{
+					__instance.colorVariants = EditorCategoryButtonColor_Variants_color;
+				}
+				if (EditorCategoryButtonColor_Custom_replace)
+				{
+					__instance.colorCategory = EditorCategoryButtonColor_Custom_color;
+				}
+			}
+		}
 		/*
 		Perhaps at some point we might tackle orbital lines
 		

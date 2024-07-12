@@ -78,7 +78,16 @@ HUDReplacerRecolor:NEEDS[HUDReplacer]
 	SASDisplayOnColor = 1,1,1,1
 	SASDisplayOffColor = 1,1,1,1
 	RCSDisplayOnColor = 1,1,1,1
-	RCSDisplayOffColor = 1,1,1,1
+	RCSDisplayOffColor = 1,1,1,1	
+	EditorCategoryButtonColor = 1,1,1,1
+	EditorCategoryModuleButtonColor = 1,1,1,1
+	EditorCategoryResourceButtonColor = 1,1,1,1
+	EditorCategoryManufacturerButtonColor = 1,1,1,1
+	EditorCategoryTechButtonColor = 1,1,1,1
+	EditorCategoryProfileButtonColor = 1,1,1,1
+	EditorCategorySubassemblyButtonColor = 1,1,1,1
+	EditorCategoryVariantsButtonColor = 1,1,1,1
+	EditorCategoryCustomButtonColor = 1,1,1,1
 }
 ```
 
