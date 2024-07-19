@@ -237,7 +237,7 @@ namespace HUDReplacer
 					}
 				}
 				Texture2D[] tex_array = textures.ToArray();
-				if (tex_array.Length > 0) HUDReplacer.instance.ReplaceTextures(tex_array);
+				if (tex_array.Length > 0) HUDReplacer.Instance.ReplaceTextures(tex_array);
 			}
 		}
 

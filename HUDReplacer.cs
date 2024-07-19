@@ -31,15 +31,18 @@ namespace HUDReplacer
 	}
 	public partial class HUDReplacer : MonoBehaviour
 	{
-		internal static HUDReplacer instance;
+		public static HUDReplacer Instance { get; private set; }
 		internal static bool enableDebug = false;
 		private static Dictionary<string, string> images;
 		private static string filePathConfig = "HUDReplacer";
 		private static string colorPathConfig = "HUDReplacerRecolor";
 		private TextureCursor[] cursors;
+
+		public static List<ConfigNode> additionalConfigNodes = new List<ConfigNode>();
+		public static List<ConfigNode> additionalRecolorNodes = new List<ConfigNode>();
 		public void Awake()
-        {
-			instance = this;
+		{
+			Instance = this;
 			Debug.Log("HUDReplacer: Running scene change. " + HighLogic.LoadedScene);
 			// No longer cache on first load, as new 'onScene' config option will require a per-scene reload
 			//if (images == null)
@@ -135,22 +138,23 @@ namespace HUDReplacer
 
 		
 
-		private void GetTextures()
+		public void GetTextures()
 		{
 			images = new Dictionary<string, string>();
-			UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs(filePathConfig);
-			if(configs.Length <= 0)
+			ConfigNode[] configs = Array.ConvertAll(GameDatabase.Instance.GetConfigs(filePathConfig), x => x.config).ToArray();
+			configs = configs.Concat(additionalConfigNodes).ToArray();
+			if (configs.Length <= 0)
 			{
 				Debug.Log("HUDReplacer: No texture configs found.");
 				return;
 			}
 			
 			Debug.Log("HUDReplacer file paths found:");
-			configs = configs.OrderByDescending(x => int.Parse(x.config.GetValue("priority"))).ToArray();
-			foreach(UrlDir.UrlConfig configFile in configs)
+			configs = configs.OrderByDescending(x => int.Parse(x.GetValue("priority"))).ToArray();
+			foreach (ConfigNode configFile in configs)
 			{
-				string filePath = configFile.config.GetValue("filePath");
-				string onScene = configFile.config.HasValue("onScene") ? configFile.config.GetValue("onScene") : "";
+				string filePath = configFile.GetValue("filePath");
+				string onScene = configFile.HasValue("onScene") ? configFile.GetValue("onScene") : "";
 
 				if(onScene != "")
 				{
@@ -165,7 +169,7 @@ namespace HUDReplacer
 					}
 				}
 				
-				int priority = int.Parse(configFile.config.GetValue("priority"));
+				int priority = int.Parse(configFile.GetValue("priority"));
 				Debug.Log("HUDReplacer: path " + filePath + " - priority: "+priority);
 				//string[] files = Directory.GetFiles(filePath, "*.png");
 				string[] files = Directory.GetFiles(KSPUtil.ApplicationRootPath + filePath, "*.png");
@@ -182,7 +186,7 @@ namespace HUDReplacer
 			}
 		}
 
-		internal void ReplaceTextures()
+		public void ReplaceTextures()
 		{
 			Texture2D[] tex_array = (Texture2D[])(object)Resources.FindObjectsOfTypeAll(typeof(Texture2D));
 			ReplaceTextures(tex_array);
@@ -261,382 +265,383 @@ namespace HUDReplacer
 			this.Invoke(SetCursor, 1f);
 		}
 
-		internal void LoadHUDColors()
+		public void LoadHUDColors()
 		{
-			UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs(colorPathConfig);
+			ConfigNode[] configs = Array.ConvertAll(GameDatabase.Instance.GetConfigs(colorPathConfig), x => x.config).ToArray();
+			configs = configs.Concat(additionalRecolorNodes).ToArray();
 			if (configs.Length <= 0)
 			{
 				return;
 			}
-			configs = configs.OrderByDescending(x => int.Parse(x.config.GetValue("priority"))).ToArray();
+			configs = configs.OrderByDescending(x => int.Parse(x.GetValue("priority"))).ToArray();
 			List<string> colorsSet = new List<string>();
-			foreach (UrlDir.UrlConfig configFile in configs)
+			foreach (ConfigNode configFile in configs)
 			{
-				int priority = int.Parse(configFile.config.GetValue("priority"));
+				int priority = int.Parse(configFile.GetValue("priority"));
 
 				string TumblerColorPositive = "tumblerColorPositive";
-				if (configFile.config.HasValue(TumblerColorPositive))
+				if (configFile.HasValue(TumblerColorPositive))
 				{
 					if (!colorsSet.Contains(TumblerColorPositive))
 					{
 						colorsSet.Add(TumblerColorPositive);
-						Color color = configFile.config.GetValue(TumblerColorPositive).ToRGBA();
+						Color color = configFile.GetValue(TumblerColorPositive).ToRGBA();
 						HarmonyPatches.TumblerColorReplacePositive = true;
 						HarmonyPatches.TumblerColorPositive = color;
 					}
 				}
 				string TumblerColorNegative = "tumblerColorNegative";
-				if (configFile.config.HasValue(TumblerColorNegative))
+				if (configFile.HasValue(TumblerColorNegative))
 				{
 					if (!colorsSet.Contains(TumblerColorNegative))
 					{
 						colorsSet.Add(TumblerColorNegative);
-						Color color = configFile.config.GetValue(TumblerColorNegative).ToRGBA();
+						Color color = configFile.GetValue(TumblerColorNegative).ToRGBA();
 						HarmonyPatches.TumblerColorReplaceNegative = true;
 						HarmonyPatches.TumblerColorNegative = color;
 					}
 				}
 
 				string PAWTitleBar = "PAWTitleBar";
-				if (configFile.config.HasValue(PAWTitleBar))
+				if (configFile.HasValue(PAWTitleBar))
 				{
 					if (!colorsSet.Contains(PAWTitleBar))
 					{
 						colorsSet.Add(PAWTitleBar);
-						HarmonyPatches.PAWTitleBar_color = configFile.config.GetValue(PAWTitleBar).ToRGBA();
+						HarmonyPatches.PAWTitleBar_color = configFile.GetValue(PAWTitleBar).ToRGBA();
 						HarmonyPatches.PAWTitleBar_replace = true;
 					}
 				}
 
 				string PAWBlueButton = "PAWBlueButton";
-				if (configFile.config.HasValue(PAWBlueButton))
+				if (configFile.HasValue(PAWBlueButton))
 				{
 					if (!colorsSet.Contains(PAWBlueButton))
 					{
 						colorsSet.Add(PAWBlueButton);
 						HarmonyPatches.PAWBlueButton_replace = true;
-						HarmonyPatches.PAWBlueButton_color = configFile.config.GetValue(PAWBlueButton).ToRGBA();
+						HarmonyPatches.PAWBlueButton_color = configFile.GetValue(PAWBlueButton).ToRGBA();
 					}
 				}
 
 				string PAWBlueButtonToggle = "PAWBlueButtonToggle";
-				if (configFile.config.HasValue(PAWBlueButtonToggle))
+				if (configFile.HasValue(PAWBlueButtonToggle))
 				{
 					if (!colorsSet.Contains(PAWBlueButtonToggle))
 					{
 						colorsSet.Add(PAWBlueButtonToggle);
 						HarmonyPatches.PAWBlueButtonToggle_replace = true;
-						HarmonyPatches.PAWBlueButtonToggle_color = configFile.config.GetValue(PAWBlueButtonToggle).ToRGBA();
+						HarmonyPatches.PAWBlueButtonToggle_color = configFile.GetValue(PAWBlueButtonToggle).ToRGBA();
 					}
 				}
 
 				string PAWVariantSelectorNext = "PAWVariantSelectorNext";
-				if (configFile.config.HasValue(PAWVariantSelectorNext))
+				if (configFile.HasValue(PAWVariantSelectorNext))
 				{
 					if (!colorsSet.Contains(PAWVariantSelectorNext))
 					{
 						colorsSet.Add(PAWVariantSelectorNext);
 						HarmonyPatches.PAWVariantSelectorNext_replace = true;
-						HarmonyPatches.PAWVariantSelectorNext_color = configFile.config.GetValue(PAWVariantSelectorNext).ToRGBA();
+						HarmonyPatches.PAWVariantSelectorNext_color = configFile.GetValue(PAWVariantSelectorNext).ToRGBA();
 					}
 				}
 
 				string PAWVariantSelectorPrevious = "PAWVariantSelectorPrevious";
-				if (configFile.config.HasValue(PAWVariantSelectorPrevious))
+				if (configFile.HasValue(PAWVariantSelectorPrevious))
 				{
 					if (!colorsSet.Contains(PAWVariantSelectorPrevious))
 					{
 						colorsSet.Add(PAWVariantSelectorPrevious);
 						HarmonyPatches.PAWVariantSelectorPrevious_replace = true;
-						HarmonyPatches.PAWVariantSelectorPrevious_color = configFile.config.GetValue(PAWVariantSelectorPrevious).ToRGBA();
+						HarmonyPatches.PAWVariantSelectorPrevious_color = configFile.GetValue(PAWVariantSelectorPrevious).ToRGBA();
 					}
 				}
 
 				string PAWResourcePriorityIncrease = "PAWResourcePriorityIncrease";
-				if (configFile.config.HasValue(PAWResourcePriorityIncrease))
+				if (configFile.HasValue(PAWResourcePriorityIncrease))
 				{
 					if (!colorsSet.Contains(PAWResourcePriorityIncrease))
 					{
 						colorsSet.Add(PAWResourcePriorityIncrease);
 						HarmonyPatches.PAWResourcePriorityIncrease_replace = true;
-						HarmonyPatches.PAWResourcePriorityIncrease_color = configFile.config.GetValue(PAWResourcePriorityIncrease).ToRGBA();
+						HarmonyPatches.PAWResourcePriorityIncrease_color = configFile.GetValue(PAWResourcePriorityIncrease).ToRGBA();
 					}
 				}
 
 				string PAWResourcePriorityDecrease = "PAWResourcePriorityDecrease";
-				if (configFile.config.HasValue(PAWResourcePriorityDecrease))
+				if (configFile.HasValue(PAWResourcePriorityDecrease))
 				{
 					if (!colorsSet.Contains(PAWResourcePriorityDecrease))
 					{
 						colorsSet.Add(PAWResourcePriorityDecrease);
 						HarmonyPatches.PAWResourcePriorityDecrease_replace = true;
-						HarmonyPatches.PAWResourcePriorityDecrease_color = configFile.config.GetValue(PAWResourcePriorityDecrease).ToRGBA();
+						HarmonyPatches.PAWResourcePriorityDecrease_color = configFile.GetValue(PAWResourcePriorityDecrease).ToRGBA();
 					}
 				}
 
 				string PAWResourcePriorityReset = "PAWResourcePriorityReset";
-				if (configFile.config.HasValue(PAWResourcePriorityReset))
+				if (configFile.HasValue(PAWResourcePriorityReset))
 				{
 					if (!colorsSet.Contains(PAWResourcePriorityReset))
 					{
 						colorsSet.Add(PAWResourcePriorityReset);
 						HarmonyPatches.PAWResourcePriorityReset_replace = true;
-						HarmonyPatches.PAWResourcePriorityReset_color = configFile.config.GetValue(PAWResourcePriorityReset).ToRGBA();
+						HarmonyPatches.PAWResourcePriorityReset_color = configFile.GetValue(PAWResourcePriorityReset).ToRGBA();
 					}
 				}
 
 				string PAWFuelSliderColor = "PAWFuelSliderColor";
-				if (configFile.config.HasValue(PAWFuelSliderColor))
+				if (configFile.HasValue(PAWFuelSliderColor))
 				{
 					if (!colorsSet.Contains(PAWFuelSliderColor))
 					{
 						colorsSet.Add(PAWFuelSliderColor);
 						HarmonyPatches.PAWFuelSliderColor_replace = true;
-						HarmonyPatches.PAWFuelSliderColor = configFile.config.GetValue(PAWFuelSliderColor).ToRGBA();
+						HarmonyPatches.PAWFuelSliderColor = configFile.GetValue(PAWFuelSliderColor).ToRGBA();
 					}
 				}
 
 				string PAWFuelSliderTextColor = "PAWFuelSliderTextColor";
-				if (configFile.config.HasValue(PAWFuelSliderTextColor))
+				if (configFile.HasValue(PAWFuelSliderTextColor))
 				{
 					if (!colorsSet.Contains(PAWFuelSliderTextColor))
 					{
 						colorsSet.Add(PAWFuelSliderTextColor);
 						HarmonyPatches.PAWFuelSliderTextColor_replace = true;
-						HarmonyPatches.PAWFuelSliderTextColor = configFile.config.GetValue(PAWFuelSliderTextColor).ToRGBA();
+						HarmonyPatches.PAWFuelSliderTextColor = configFile.GetValue(PAWFuelSliderTextColor).ToRGBA();
 					}
 				}
 
 				string KALTitleBar = "KALTitleBar";
-				if (configFile.config.HasValue(KALTitleBar))
+				if (configFile.HasValue(KALTitleBar))
 				{
 					if (!colorsSet.Contains(KALTitleBar))
 					{
 						colorsSet.Add(KALTitleBar);
-						HarmonyPatches.KALTitleBar_color = configFile.config.GetValue(KALTitleBar).ToRGBA();
+						HarmonyPatches.KALTitleBar_color = configFile.GetValue(KALTitleBar).ToRGBA();
 						HarmonyPatches.KALTitleBar_replace = true;
 					}
 				}
 
 				string gaugeNeedleYawPitchRoll = "gaugeNeedleYawPitchRoll";
-				if (configFile.config.HasValue(gaugeNeedleYawPitchRoll))
+				if (configFile.HasValue(gaugeNeedleYawPitchRoll))
 				{
 					if (!colorsSet.Contains(gaugeNeedleYawPitchRoll))
 					{
 						colorsSet.Add(gaugeNeedleYawPitchRoll);
-						HarmonyPatches.gaugeNeedleYawPitchRollColor = configFile.config.GetValue(gaugeNeedleYawPitchRoll).ToRGBA();
+						HarmonyPatches.gaugeNeedleYawPitchRollColor = configFile.GetValue(gaugeNeedleYawPitchRoll).ToRGBA();
 						HarmonyPatches.gaugeNeedleYawPitchRollColor_replace = true;
 					}
 				}
 
 				string gaugeNeedleYawPitchRollPrecision = "gaugeNeedleYawPitchRollPrecision";
-				if (configFile.config.HasValue(gaugeNeedleYawPitchRollPrecision))
+				if (configFile.HasValue(gaugeNeedleYawPitchRollPrecision))
 				{
 					if (!colorsSet.Contains(gaugeNeedleYawPitchRollPrecision))
 					{
 						colorsSet.Add(gaugeNeedleYawPitchRollPrecision);
-						HarmonyPatches.gaugeNeedleYawPitchRollPrecisionColor = configFile.config.GetValue(gaugeNeedleYawPitchRollPrecision).ToRGBA();
+						HarmonyPatches.gaugeNeedleYawPitchRollPrecisionColor = configFile.GetValue(gaugeNeedleYawPitchRollPrecision).ToRGBA();
 						HarmonyPatches.gaugeNeedleYawPitchRollPrecisionColor_replace = true;
 					}
 				}
 
 				string METDisplayColorRed = "METDisplayColorRed";
-				if (configFile.config.HasValue(METDisplayColorRed))
+				if (configFile.HasValue(METDisplayColorRed))
 				{
 					if (!colorsSet.Contains(METDisplayColorRed))
 					{
 						colorsSet.Add(METDisplayColorRed);
-						HarmonyPatches.METDisplayColorRed = configFile.config.GetValue(METDisplayColorRed).ToRGBA();
+						HarmonyPatches.METDisplayColorRed = configFile.GetValue(METDisplayColorRed).ToRGBA();
 					}
 				}
 
 				string METDisplayColorYellow = "METDisplayColorYellow";
-				if (configFile.config.HasValue(METDisplayColorYellow))
+				if (configFile.HasValue(METDisplayColorYellow))
 				{
 					if (!colorsSet.Contains(METDisplayColorYellow))
 					{
 						colorsSet.Add(METDisplayColorYellow);
-						HarmonyPatches.METDisplayColorYellow = configFile.config.GetValue(METDisplayColorYellow).ToRGBA();
+						HarmonyPatches.METDisplayColorYellow = configFile.GetValue(METDisplayColorYellow).ToRGBA();
 					}
 				}
 
 				string METDisplayColorGreen = "METDisplayColorGreen";
-				if (configFile.config.HasValue(METDisplayColorGreen))
+				if (configFile.HasValue(METDisplayColorGreen))
 				{
 					if (!colorsSet.Contains(METDisplayColorGreen))
 					{
 						colorsSet.Add(METDisplayColorGreen);
-						HarmonyPatches.METDisplayColorGreen = configFile.config.GetValue(METDisplayColorGreen).ToRGBA();
+						HarmonyPatches.METDisplayColorGreen = configFile.GetValue(METDisplayColorGreen).ToRGBA();
 					}
 				}
 
 				string SpeedDisplayColorTextReplace = "speedDisplayColorText";
-				if (configFile.config.HasValue(SpeedDisplayColorTextReplace))
+				if (configFile.HasValue(SpeedDisplayColorTextReplace))
 				{
 					if (!colorsSet.Contains(SpeedDisplayColorTextReplace))
 					{
 						colorsSet.Add(SpeedDisplayColorTextReplace);
 						HarmonyPatches.SpeedDisplayColorTextReplace = true;
-						HarmonyPatches.SpeedDisplayColorText = configFile.config.GetValue(SpeedDisplayColorTextReplace).ToRGBA();
+						HarmonyPatches.SpeedDisplayColorText = configFile.GetValue(SpeedDisplayColorTextReplace).ToRGBA();
 					}
 				}
 
 				string SpeedDisplayColorSpeedReplace = "speedDisplayColorSpeed";
-				if (configFile.config.HasValue(SpeedDisplayColorSpeedReplace))
+				if (configFile.HasValue(SpeedDisplayColorSpeedReplace))
 				{
 					if (!colorsSet.Contains(SpeedDisplayColorSpeedReplace))
 					{
 						colorsSet.Add(SpeedDisplayColorSpeedReplace);
 						HarmonyPatches.SpeedDisplayColorSpeedReplace = true;
-						HarmonyPatches.SpeedDisplayColorSpeed = configFile.config.GetValue(SpeedDisplayColorSpeedReplace).ToRGBA();
+						HarmonyPatches.SpeedDisplayColorSpeed = configFile.GetValue(SpeedDisplayColorSpeedReplace).ToRGBA();
 					}
 				}
 
 				string NavBallHeadingColor = "navBallHeadingColor";
-				if (configFile.config.HasValue(NavBallHeadingColor))
+				if (configFile.HasValue(NavBallHeadingColor))
 				{
 					if (!colorsSet.Contains(NavBallHeadingColor))
 					{
 						colorsSet.Add(NavBallHeadingColor);
 						HarmonyPatches.NavBallHeadingColorReplace = true;
-						HarmonyPatches.NavBallHeadingColor = configFile.config.GetValue(NavBallHeadingColor).ToRGBA();
+						HarmonyPatches.NavBallHeadingColor = configFile.GetValue(NavBallHeadingColor).ToRGBA();
 					}
 				}
 
 				string StageTotalDeltaVColor = "stageTotalDeltaVColor";
-				if (configFile.config.HasValue(StageTotalDeltaVColor))
+				if (configFile.HasValue(StageTotalDeltaVColor))
 				{
 					if (!colorsSet.Contains(StageTotalDeltaVColor))
 					{
 						colorsSet.Add(StageTotalDeltaVColor);
 						HarmonyPatches.StageTotalDeltaVColorReplace = true;
-						HarmonyPatches.StageTotalDeltaVColor = configFile.config.GetValue(StageTotalDeltaVColor).ToRGBA();
+						HarmonyPatches.StageTotalDeltaVColor = configFile.GetValue(StageTotalDeltaVColor).ToRGBA();
 					}
 				}
 
 				string StageGroupDeltaVTextColor = "stageGroupDeltaVTextColor";
-				if (configFile.config.HasValue(StageGroupDeltaVTextColor))
+				if (configFile.HasValue(StageGroupDeltaVTextColor))
 				{
 					if (!colorsSet.Contains(StageGroupDeltaVTextColor))
 					{
 						colorsSet.Add(StageGroupDeltaVTextColor);
 						HarmonyPatches.StageGroupDeltaVTextColorReplace = true;
-						HarmonyPatches.StageGroupDeltaVTextColor = configFile.config.GetValue(StageGroupDeltaVTextColor).ToRGBA();
+						HarmonyPatches.StageGroupDeltaVTextColor = configFile.GetValue(StageGroupDeltaVTextColor).ToRGBA();
 					}
 				}
 
 				string StageGroupDeltaVNumberColor = "stageGroupDeltaVNumberColor";
-				if (configFile.config.HasValue(StageGroupDeltaVNumberColor))
+				if (configFile.HasValue(StageGroupDeltaVNumberColor))
 				{
 					if (!colorsSet.Contains(StageGroupDeltaVNumberColor))
 					{
 						colorsSet.Add(StageGroupDeltaVNumberColor);
 						HarmonyPatches.StageGroupDeltaVNumberColorReplace = true;
-						HarmonyPatches.StageGroupDeltaVNumberColor = configFile.config.GetValue(StageGroupDeltaVNumberColor).ToRGBA();
+						HarmonyPatches.StageGroupDeltaVNumberColor = configFile.GetValue(StageGroupDeltaVNumberColor).ToRGBA();
 					}
 				}
 
 				string StageGroupDeltaVBackgroundColor = "stageGroupDeltaVBackgroundColor";
-				if (configFile.config.HasValue(StageGroupDeltaVBackgroundColor))
+				if (configFile.HasValue(StageGroupDeltaVBackgroundColor))
 				{
 					if (!colorsSet.Contains(StageGroupDeltaVBackgroundColor))
 					{
 						colorsSet.Add(StageGroupDeltaVBackgroundColor);
 						HarmonyPatches.StageGroupDeltaVBackgroundColorReplace = true;
-						HarmonyPatches.StageGroupDeltaVBackgroundColor = configFile.config.GetValue(StageGroupDeltaVBackgroundColor).ToRGBA();
+						HarmonyPatches.StageGroupDeltaVBackgroundColor = configFile.GetValue(StageGroupDeltaVBackgroundColor).ToRGBA();
 					}
 				}
 
 				string StageEngineFuelGaugeTextColor = "stageEngineFuelGaugeTextColor";
-				if (configFile.config.HasValue(StageEngineFuelGaugeTextColor))
+				if (configFile.HasValue(StageEngineFuelGaugeTextColor))
 				{
 					if (!colorsSet.Contains(StageEngineFuelGaugeTextColor))
 					{
 						colorsSet.Add(StageEngineFuelGaugeTextColor);
 						HarmonyPatches.StageEngineFuelGaugeTextColor_replace = true;
-						HarmonyPatches.StageEngineFuelGaugeTextColor_color = configFile.config.GetValue(StageEngineFuelGaugeTextColor).ToRGBA();
+						HarmonyPatches.StageEngineFuelGaugeTextColor_color = configFile.GetValue(StageEngineFuelGaugeTextColor).ToRGBA();
 					}
 				}
 
 				string StageEngineHeatGaugeTextColor = "stageEngineHeatGaugeTextColor";
-				if (configFile.config.HasValue(StageEngineHeatGaugeTextColor))
+				if (configFile.HasValue(StageEngineHeatGaugeTextColor))
 				{
 					if (!colorsSet.Contains(StageEngineHeatGaugeTextColor))
 					{
 						colorsSet.Add(StageEngineHeatGaugeTextColor);
 						HarmonyPatches.StageEngineHeatGaugeTextColor_replace = true;
-						HarmonyPatches.StageEngineHeatGaugeTextColor_color = configFile.config.GetValue(StageEngineHeatGaugeTextColor).ToRGBA();
+						HarmonyPatches.StageEngineHeatGaugeTextColor_color = configFile.GetValue(StageEngineHeatGaugeTextColor).ToRGBA();
 					}
 				}
 
 				string StageEngineFuelGaugeBackgroundColor = "stageEngineFuelGaugeBackgroundColor";
-				if (configFile.config.HasValue(StageEngineFuelGaugeBackgroundColor))
+				if (configFile.HasValue(StageEngineFuelGaugeBackgroundColor))
 				{
 					if (!colorsSet.Contains(StageEngineFuelGaugeBackgroundColor))
 					{
 						colorsSet.Add(StageEngineFuelGaugeBackgroundColor);
 						HarmonyPatches.StageEngineFuelGaugeBackgroundColor_replace = true;
-						HarmonyPatches.StageEngineFuelGaugeBackgroundColor_color = configFile.config.GetValue(StageEngineFuelGaugeBackgroundColor).ToRGBA();
+						HarmonyPatches.StageEngineFuelGaugeBackgroundColor_color = configFile.GetValue(StageEngineFuelGaugeBackgroundColor).ToRGBA();
 					}
 				}
 
 				string StageEngineHeatGaugeBackgroundColor = "stageEngineHeatGaugeBackgroundColor";
-				if (configFile.config.HasValue(StageEngineHeatGaugeBackgroundColor))
+				if (configFile.HasValue(StageEngineHeatGaugeBackgroundColor))
 				{
 					if (!colorsSet.Contains(StageEngineHeatGaugeBackgroundColor))
 					{
 						colorsSet.Add(StageEngineHeatGaugeBackgroundColor);
 						HarmonyPatches.StageEngineHeatGaugeBackgroundColor_replace = true;
-						HarmonyPatches.StageEngineHeatGaugeBackgroundColor_color = configFile.config.GetValue(StageEngineHeatGaugeBackgroundColor).ToRGBA();
+						HarmonyPatches.StageEngineHeatGaugeBackgroundColor_color = configFile.GetValue(StageEngineHeatGaugeBackgroundColor).ToRGBA();
 					}
 				}
 
 				string StageEngineFuelGaugeFillColor = "stageEngineFuelGaugeFillColor";
-				if (configFile.config.HasValue(StageEngineFuelGaugeFillColor))
+				if (configFile.HasValue(StageEngineFuelGaugeFillColor))
 				{
 					if (!colorsSet.Contains(StageEngineFuelGaugeFillColor))
 					{
 						colorsSet.Add(StageEngineFuelGaugeFillColor);
 						HarmonyPatches.StageEngineFuelGaugeFillColor_replace = true;
-						HarmonyPatches.StageEngineFuelGaugeFillColor_color = configFile.config.GetValue(StageEngineFuelGaugeFillColor).ToRGBA();
+						HarmonyPatches.StageEngineFuelGaugeFillColor_color = configFile.GetValue(StageEngineFuelGaugeFillColor).ToRGBA();
 					}
 				}
 
 				string StageEngineHeatGaugeFillColor = "stageEngineHeatGaugeFillColor";
-				if (configFile.config.HasValue(StageEngineHeatGaugeFillColor))
+				if (configFile.HasValue(StageEngineHeatGaugeFillColor))
 				{
 					if (!colorsSet.Contains(StageEngineHeatGaugeFillColor))
 					{
 						colorsSet.Add(StageEngineHeatGaugeFillColor);
 						HarmonyPatches.StageEngineHeatGaugeFillColor_replace = true;
-						HarmonyPatches.StageEngineHeatGaugeFillColor_color = configFile.config.GetValue(StageEngineHeatGaugeFillColor).ToRGBA();
+						HarmonyPatches.StageEngineHeatGaugeFillColor_color = configFile.GetValue(StageEngineHeatGaugeFillColor).ToRGBA();
 					}
 				}
 
 				string StageEngineFuelGaugeFillBackgroundColor = "stageEngineFuelGaugeFillBackgroundColor";
-				if (configFile.config.HasValue(StageEngineFuelGaugeFillBackgroundColor))
+				if (configFile.HasValue(StageEngineFuelGaugeFillBackgroundColor))
 				{
 					if (!colorsSet.Contains(StageEngineFuelGaugeFillBackgroundColor))
 					{
 						colorsSet.Add(StageEngineFuelGaugeFillBackgroundColor);
 						HarmonyPatches.StageEngineFuelGaugeFillBackgroundColor_replace = true;
-						HarmonyPatches.StageEngineFuelGaugeFillBackgroundColor_color = configFile.config.GetValue(StageEngineFuelGaugeFillBackgroundColor).ToRGBA();
+						HarmonyPatches.StageEngineFuelGaugeFillBackgroundColor_color = configFile.GetValue(StageEngineFuelGaugeFillBackgroundColor).ToRGBA();
 					}
 				}
 
 				string StageEngineHeatGaugeFillBackgroundColor = "stageEngineHeatGaugeFillBackgroundColor";
-				if (configFile.config.HasValue(StageEngineHeatGaugeFillBackgroundColor))
+				if (configFile.HasValue(StageEngineHeatGaugeFillBackgroundColor))
 				{
 					if (!colorsSet.Contains(StageEngineHeatGaugeFillBackgroundColor))
 					{
 						colorsSet.Add(StageEngineHeatGaugeFillBackgroundColor);
 						HarmonyPatches.StageEngineHeatGaugeFillBackgroundColor_replace = true;
-						HarmonyPatches.StageEngineHeatGaugeFillBackgroundColor_color = configFile.config.GetValue(StageEngineHeatGaugeFillBackgroundColor).ToRGBA();
+						HarmonyPatches.StageEngineHeatGaugeFillBackgroundColor_color = configFile.GetValue(StageEngineHeatGaugeFillBackgroundColor).ToRGBA();
 					}
 				}
 
 				string NavBallCursor = "navballCursor";
-				if (configFile.config.HasValue(NavBallCursor))
+				if (configFile.HasValue(NavBallCursor))
 				{
 					if (!colorsSet.Contains(NavBallCursor))
 					{
@@ -647,174 +652,174 @@ namespace HUDReplacer
 							Image img = go.GetComponentInChildren<Image>();
 							if (img != null)
 							{
-								img.color = configFile.config.GetValue(NavBallCursor).ToRGBA();
+								img.color = configFile.GetValue(NavBallCursor).ToRGBA();
 							}
 						}
 					}
 				}
 
 				string VerticalSpeedGaugeNeedle = "verticalSpeedGaugeNeedleColor";
-				if (configFile.config.HasValue(VerticalSpeedGaugeNeedle))
+				if (configFile.HasValue(VerticalSpeedGaugeNeedle))
 				{
 					if (!colorsSet.Contains(VerticalSpeedGaugeNeedle))
 					{
 						colorsSet.Add(VerticalSpeedGaugeNeedle);
 						HarmonyPatches.VerticalSpeedGaugeNeedleColorReplace = true;
-						HarmonyPatches.VerticalSpeedGaugeNeedleColor = configFile.config.GetValue(VerticalSpeedGaugeNeedle).ToRGBA();
+						HarmonyPatches.VerticalSpeedGaugeNeedleColor = configFile.GetValue(VerticalSpeedGaugeNeedle).ToRGBA();
 					}
 				}
 
 				string ManeuverNodeEditorTextColor = "maneuverNodeEditorTextColor";
-				if (configFile.config.HasValue(ManeuverNodeEditorTextColor))
+				if (configFile.HasValue(ManeuverNodeEditorTextColor))
 				{
 					if (!colorsSet.Contains(ManeuverNodeEditorTextColor))
 					{
 						colorsSet.Add(ManeuverNodeEditorTextColor);
 						HarmonyPatches.ManeuverNodeEditorTextColor_replace = true;
-						HarmonyPatches.ManeuverNodeEditorTextColor = configFile.config.GetValue(ManeuverNodeEditorTextColor).ToRGBA();
+						HarmonyPatches.ManeuverNodeEditorTextColor = configFile.GetValue(ManeuverNodeEditorTextColor).ToRGBA();
 					}
 				}
 
 				string SASDisplayOnColor = "SASDisplayOnColor";
-				if (configFile.config.HasValue(SASDisplayOnColor))
+				if (configFile.HasValue(SASDisplayOnColor))
 				{
 					if (!colorsSet.Contains(SASDisplayOnColor))
 					{
 						colorsSet.Add(SASDisplayOnColor);
 						HarmonyPatches.SASDisplayColor_SAS_Replace_On = true;
-						HarmonyPatches.SASDisplayColor_SAS_On_color = configFile.config.GetValue(SASDisplayOnColor).ToRGBA();
+						HarmonyPatches.SASDisplayColor_SAS_On_color = configFile.GetValue(SASDisplayOnColor).ToRGBA();
 					}
 				}
 
 				string SASDisplayOffColor = "SASDisplayOffColor";
-				if (configFile.config.HasValue(SASDisplayOffColor))
+				if (configFile.HasValue(SASDisplayOffColor))
 				{
 					if (!colorsSet.Contains(SASDisplayOffColor))
 					{
 						colorsSet.Add(SASDisplayOffColor);
 						HarmonyPatches.SASDisplayColor_SAS_Replace_Off = true;
-						HarmonyPatches.SASDisplayColor_SAS_Off_color = configFile.config.GetValue(SASDisplayOffColor).ToRGBA();
+						HarmonyPatches.SASDisplayColor_SAS_Off_color = configFile.GetValue(SASDisplayOffColor).ToRGBA();
 					}
 				}
 
 				string RCSDisplayOnColor = "RCSDisplayOnColor";
-				if (configFile.config.HasValue(RCSDisplayOnColor))
+				if (configFile.HasValue(RCSDisplayOnColor))
 				{
 					if (!colorsSet.Contains(RCSDisplayOnColor))
 					{
 						colorsSet.Add(RCSDisplayOnColor);
 						HarmonyPatches.RCSDisplayColor_RCS_Replace_On = true;
-						HarmonyPatches.RCSDisplayColor_RCS_On_color = configFile.config.GetValue(RCSDisplayOnColor).ToRGBA();
+						HarmonyPatches.RCSDisplayColor_RCS_On_color = configFile.GetValue(RCSDisplayOnColor).ToRGBA();
 					}
 				}
 
 				string RCSDisplayOffColor = "RCSDisplayOffColor";
-				if (configFile.config.HasValue(RCSDisplayOffColor))
+				if (configFile.HasValue(RCSDisplayOffColor))
 				{
 					if (!colorsSet.Contains(RCSDisplayOffColor))
 					{
 						colorsSet.Add(RCSDisplayOffColor);
 						HarmonyPatches.RCSDisplayColor_RCS_Replace_Off = true;
-						HarmonyPatches.RCSDisplayColor_RCS_Off_color = configFile.config.GetValue(RCSDisplayOffColor).ToRGBA();
+						HarmonyPatches.RCSDisplayColor_RCS_Off_color = configFile.GetValue(RCSDisplayOffColor).ToRGBA();
 					}
 				}
 				
 				string EditorCategoryButtonColor = "EditorCategoryButtonColor";
-				if (configFile.config.HasValue(EditorCategoryButtonColor))
+				if (configFile.HasValue(EditorCategoryButtonColor))
 				{
 					if (!colorsSet.Contains(EditorCategoryButtonColor))
 					{
 						colorsSet.Add(EditorCategoryButtonColor);
 						HarmonyPatches.EditorCategoryButtonColor_replace = true;
-						HarmonyPatches.EditorCategoryButtonColor_color = configFile.config.GetValue(EditorCategoryButtonColor).ToRGBA();
+						HarmonyPatches.EditorCategoryButtonColor_color = configFile.GetValue(EditorCategoryButtonColor).ToRGBA();
 					}
 				}
 
 				string EditorCategoryButtonColor_Module = "EditorCategoryModuleButtonColor";
-				if (configFile.config.HasValue(EditorCategoryButtonColor_Module))
+				if (configFile.HasValue(EditorCategoryButtonColor_Module))
 				{
 					if (!colorsSet.Contains(EditorCategoryButtonColor_Module))
 					{
 						colorsSet.Add(EditorCategoryButtonColor_Module);
 						HarmonyPatches.EditorCategoryButtonColor_Module_replace = true;
-						HarmonyPatches.EditorCategoryButtonColor_Module_color = configFile.config.GetValue(EditorCategoryButtonColor_Module).ToRGBA();
+						HarmonyPatches.EditorCategoryButtonColor_Module_color = configFile.GetValue(EditorCategoryButtonColor_Module).ToRGBA();
 					}
 				}
 
 				string EditorCategoryButtonColor_Resource = "EditorCategoryResourceButtonColor";
-				if (configFile.config.HasValue(EditorCategoryButtonColor_Resource))
+				if (configFile.HasValue(EditorCategoryButtonColor_Resource))
 				{
 					if (!colorsSet.Contains(EditorCategoryButtonColor_Resource))
 					{
 						colorsSet.Add(EditorCategoryButtonColor_Resource);
 						HarmonyPatches.EditorCategoryButtonColor_Resource_replace = true;
-						HarmonyPatches.EditorCategoryButtonColor_Resource_color = configFile.config.GetValue(EditorCategoryButtonColor_Resource).ToRGBA();
+						HarmonyPatches.EditorCategoryButtonColor_Resource_color = configFile.GetValue(EditorCategoryButtonColor_Resource).ToRGBA();
 					}
 				}
 
 				string EditorCategoryButtonColor_Manufacturer = "EditorCategoryManufacturerButtonColor";
-				if (configFile.config.HasValue(EditorCategoryButtonColor_Manufacturer))
+				if (configFile.HasValue(EditorCategoryButtonColor_Manufacturer))
 				{
 					if (!colorsSet.Contains(EditorCategoryButtonColor_Manufacturer))
 					{
 						colorsSet.Add(EditorCategoryButtonColor_Manufacturer);
 						HarmonyPatches.EditorCategoryButtonColor_Manufacturer_replace = true;
-						HarmonyPatches.EditorCategoryButtonColor_Manufacturer_color = configFile.config.GetValue(EditorCategoryButtonColor_Manufacturer).ToRGBA();
+						HarmonyPatches.EditorCategoryButtonColor_Manufacturer_color = configFile.GetValue(EditorCategoryButtonColor_Manufacturer).ToRGBA();
 					}
 				}
 
 				string EditorCategoryButtonColor_Tech = "EditorCategoryTechButtonColor";
-				if (configFile.config.HasValue(EditorCategoryButtonColor_Tech))
+				if (configFile.HasValue(EditorCategoryButtonColor_Tech))
 				{
 					if (!colorsSet.Contains(EditorCategoryButtonColor_Tech))
 					{
 						colorsSet.Add(EditorCategoryButtonColor_Tech);
 						HarmonyPatches.EditorCategoryButtonColor_Tech_replace = true;
-						HarmonyPatches.EditorCategoryButtonColor_Tech_color = configFile.config.GetValue(EditorCategoryButtonColor_Tech).ToRGBA();
+						HarmonyPatches.EditorCategoryButtonColor_Tech_color = configFile.GetValue(EditorCategoryButtonColor_Tech).ToRGBA();
 					}
 				}
 
 				string EditorCategoryButtonColor_Profile = "EditorCategoryProfileButtonColor";
-				if (configFile.config.HasValue(EditorCategoryButtonColor_Profile))
+				if (configFile.HasValue(EditorCategoryButtonColor_Profile))
 				{
 					if (!colorsSet.Contains(EditorCategoryButtonColor_Profile))
 					{
 						colorsSet.Add(EditorCategoryButtonColor_Profile);
 						HarmonyPatches.EditorCategoryButtonColor_Profile_replace = true;
-						HarmonyPatches.EditorCategoryButtonColor_Profile_color = configFile.config.GetValue(EditorCategoryButtonColor_Profile).ToRGBA();
+						HarmonyPatches.EditorCategoryButtonColor_Profile_color = configFile.GetValue(EditorCategoryButtonColor_Profile).ToRGBA();
 					}
 				}
 
 				string EditorCategoryButtonColor_Subassembly = "EditorCategorySubassemblyButtonColor";
-				if (configFile.config.HasValue(EditorCategoryButtonColor_Subassembly))
+				if (configFile.HasValue(EditorCategoryButtonColor_Subassembly))
 				{
 					if (!colorsSet.Contains(EditorCategoryButtonColor_Subassembly))
 					{
 						colorsSet.Add(EditorCategoryButtonColor_Subassembly);
 						HarmonyPatches.EditorCategoryButtonColor_Subassembly_replace = true;
-						HarmonyPatches.EditorCategoryButtonColor_Subassembly_color = configFile.config.GetValue(EditorCategoryButtonColor_Subassembly).ToRGBA();
+						HarmonyPatches.EditorCategoryButtonColor_Subassembly_color = configFile.GetValue(EditorCategoryButtonColor_Subassembly).ToRGBA();
 					}
 				}
 
 				string EditorCategoryButtonColor_Variants = "EditorCategoryVariantsButtonColor";
-				if (configFile.config.HasValue(EditorCategoryButtonColor_Variants))
+				if (configFile.HasValue(EditorCategoryButtonColor_Variants))
 				{
 					if (!colorsSet.Contains(EditorCategoryButtonColor_Variants))
 					{
 						colorsSet.Add(EditorCategoryButtonColor_Variants);
 						HarmonyPatches.EditorCategoryButtonColor_Variants_replace = true;
-						HarmonyPatches.EditorCategoryButtonColor_Variants_color = configFile.config.GetValue(EditorCategoryButtonColor_Variants).ToRGBA();
+						HarmonyPatches.EditorCategoryButtonColor_Variants_color = configFile.GetValue(EditorCategoryButtonColor_Variants).ToRGBA();
 					}
 				}
 
 				string EditorCategoryButtonColor_Custom = "EditorCategoryCustomButtonColor";
-				if (configFile.config.HasValue(EditorCategoryButtonColor_Custom))
+				if (configFile.HasValue(EditorCategoryButtonColor_Custom))
 				{
 					if (!colorsSet.Contains(EditorCategoryButtonColor_Custom))
 					{
 						colorsSet.Add(EditorCategoryButtonColor_Custom);
 						HarmonyPatches.EditorCategoryButtonColor_Custom_replace = true;
-						HarmonyPatches.EditorCategoryButtonColor_Custom_color = configFile.config.GetValue(EditorCategoryButtonColor_Custom).ToRGBA();
+						HarmonyPatches.EditorCategoryButtonColor_Custom_color = configFile.GetValue(EditorCategoryButtonColor_Custom).ToRGBA();
 					}
 				}
 			}
