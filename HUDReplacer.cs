@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace HUDReplacer
@@ -31,9 +32,44 @@ namespace HUDReplacer
 	}
 	public partial class HUDReplacer : MonoBehaviour
 	{
+		class ReplacementInfo
+		{
+			public List<SizedReplacementInfo> replacements;
+
+			public SizedReplacementInfo GetMatchingReplacement(Texture2D tex)
+			{
+				foreach (var info in replacements)
+				{
+					if (info.width == 0 && info.height == 0)
+						return info;
+
+					if (info.width == tex.width && info.height == tex.height)
+						return info;
+				}
+
+				return null;
+			}
+		}
+
+		class SizedReplacementInfo
+		{
+			public int priority;
+			public int width;
+			public int height;
+			public string path;
+			public byte[] cachedTextureBytes;
+		}
+
 		internal static HUDReplacer instance;
 		internal static bool enableDebug = false;
-		private static Dictionary<string, string> images;
+
+		private static Dictionary<string, ReplacementInfo> Images;
+		private static Dictionary<GameScenes, Dictionary<string, ReplacementInfo>> SceneImages;
+
+		// Empty dictionary to be used when there are no images for a given scene.
+		private static readonly Dictionary<string, ReplacementInfo> Empty = new Dictionary<string, ReplacementInfo>();
+		private static readonly string[] CursorNames = new string[] { "basicNeutral", "basicElectricLime", "basicDisabled" };
+
 		private static string filePathConfig = "HUDReplacer";
 		private static string colorPathConfig = "HUDReplacerRecolor";
 		private TextureCursor[] cursors;
@@ -41,17 +77,17 @@ namespace HUDReplacer
         {
 			instance = this;
 			Debug.Log("HUDReplacer: Running scene change. " + HighLogic.LoadedScene);
-			// No longer cache on first load, as new 'onScene' config option will require a per-scene reload
-			//if (images == null)
-			//{
-			GetTextures();
-			//}
-			if (images.Count > 0)
+
+			if (Images is null)
+				LoadTextures();
+
+			if (Images.Count != 0 && SceneImages.Count != 0)
 			{
 				Debug.Log("HUDReplacer: Replacing textures...");
 				ReplaceTextures();
 				Debug.Log("HUDReplacer: Textures have been replaced!");
 			}
+
 			LoadHUDColors();
 		}
 
@@ -71,7 +107,7 @@ namespace HUDReplacer
 				}
 				if (Input.GetKeyUp(KeyCode.Q))
 				{
-					GetTextures();
+					LoadTextures();
 					ReplaceTextures();
 					LoadHUDColors();
 					Debug.Log("HUDReplacer: Refreshed.");
@@ -132,133 +168,193 @@ namespace HUDReplacer
 
 		}
 
-
-		
-
-		private void GetTextures()
+		// This gets called by ModuleManager once it has finished applying all
+		// patches. If MM is not installed then we'll call LoadTextures in Awake
+		// instead.
+		public static void ModuleManagerPostLoad()
 		{
-			images = new Dictionary<string, string>();
-			UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs(filePathConfig);
-			if(configs.Length <= 0)
+			LoadTextures();
+		}
+
+		static void LoadTextures()
+		{
+			Images = new Dictionary<string, ReplacementInfo>();
+			SceneImages = new Dictionary<GameScenes, Dictionary<string, ReplacementInfo>>();
+
+			UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs(filePathConfig)
+				.OrderByDescending((configFile) =>
+				{
+					int priority = 0;
+					configFile.config.TryGetValue("priority", ref priority);
+					return priority;
+				})
+				.ToArray();
+
+			if (configs.Length == 0)
 			{
 				Debug.Log("HUDReplacer: No texture configs found.");
 				return;
 			}
-			
-			Debug.Log("HUDReplacer file paths found:");
-			configs = configs.OrderByDescending(x => int.Parse(x.config.GetValue("priority"))).ToArray();
-			foreach(UrlDir.UrlConfig configFile in configs)
-			{
-				string filePath = configFile.config.GetValue("filePath");
-				string onScene = configFile.config.HasValue("onScene") ? configFile.config.GetValue("onScene") : "";
 
-				if(onScene != "")
+			foreach (var configFile in configs)
+			{
+				var config = configFile.config;
+				var filePath = config.GetValue("filePath");
+
+				string onScene = null;
+				Dictionary<string, ReplacementInfo> replacements = Images;
+				if (config.TryGetValue("onScene", ref onScene))
 				{
-					try
+					if (!Enum.TryParse(onScene, out GameScenes scene))
 					{
-						GameScenes scene = (GameScenes)Enum.Parse(typeof(GameScenes), onScene);
-						if (HighLogic.LoadedScene != scene) continue;
+						Debug.LogError($"HUDReplacer: Config {configFile.url} contained invalid onScene value {onScene ?? "<null>"}");
+						continue;
 					}
-					catch (Exception e)
+
+					if (!SceneImages.TryGetValue(scene, out replacements))
 					{
-						Debug.LogError("HUDReplacer: Error loading onScene variable '" + onScene + "' from filePath: " + filePath);
+						replacements = new Dictionary<string, ReplacementInfo>();
+						SceneImages.Add(scene, replacements);
 					}
 				}
-				
-				int priority = int.Parse(configFile.config.GetValue("priority"));
-				Debug.Log("HUDReplacer: path " + filePath + " - priority: "+priority);
-				//string[] files = Directory.GetFiles(filePath, "*.png");
-				string[] files = Directory.GetFiles(KSPUtil.ApplicationRootPath + filePath, "*.png");
-				foreach (string text in files)
+
+				int priority = 0;
+				if (!config.TryGetValue("priority", ref priority))
 				{
-					Debug.Log("HUDReplacer: Found file " + text);
-					string filename = Path.GetFileNameWithoutExtension(text);
-					if (!images.ContainsKey(filename))
+					Debug.LogError($"HUDReplacer: config at {configFile.url} is missing a priority key and will not be loaded");
+					continue;
+				}
+
+				Debug.Log($"HUDReplacer: path {filePath} - priority: {priority}");
+				string[] files = Directory.GetFiles(KSPUtil.ApplicationRootPath + filePath, "*.png");
+
+				foreach (string filename in files)
+				{
+					Debug.Log($"HUDReplacer: Found file {filename}");
+
+					int width = 0;
+					int height = 0;
+
+					string basename = Path.GetFileNameWithoutExtension(filename);
+					int index = basename.LastIndexOf('#');
+					if (index != -1)
 					{
-						images.Add(filename, text);
+						string size = basename.Substring(index + 1);
+						basename = basename.Substring(0, index);
+
+						index = size.IndexOf('x');
+						if (index == -1 
+							|| !int.TryParse(size.Substring(0, index), out width)
+							|| !int.TryParse(size.Substring(index + 1), out height))
+						{
+							Debug.LogError($"HUDReplacer: filename {filename} was not in the expected format. It needs to be either `name.png` or `name#<width>x<height>.png`");
+							continue;
+						}
 					}
-					
+
+					SizedReplacementInfo info = new SizedReplacementInfo
+					{
+						priority = priority,
+						width = width,
+						height = height,
+						path = filename
+					};
+
+					if (!replacements.TryGetValue(basename, out var replacement))
+					{
+						replacement = new ReplacementInfo
+						{
+							replacements = new List<SizedReplacementInfo>(1)
+						};
+						replacements.Add(basename, replacement);
+					}
+
+					replacement.replacements.Add(info);
 				}
 			}
 		}
 
 		internal void ReplaceTextures()
 		{
+			if (Images.Count == 0 && SceneImages.Count == 0)
+				return;
+
 			Texture2D[] tex_array = (Texture2D[])(object)Resources.FindObjectsOfTypeAll(typeof(Texture2D));
 			ReplaceTextures(tex_array);
 		}
 		internal void ReplaceTextures(Texture2D[] tex_array)
 		{
-			if (images.Count == 0) return;
+			if (Images.Count == 0 && SceneImages.Count == 0)
+				return;
 
-			string[] cursor_names = new string[] { "basicNeutral", "basicElectricLime", "basicDisabled" };
-			
+			// Get the overloads specific to the current scene but if there are
+			// then we just use an empty dictionary.
+			if (!SceneImages.TryGetValue(HighLogic.LoadedScene, out var sceneImages))
+				sceneImages = Empty;
 
 			foreach (Texture2D tex in tex_array)
 			{
-				string tex_name_stripped = tex.name;
-				if(tex_name_stripped.Contains('/')) // weird RP1 case. May also happen with other mods
+				string name = tex.name;
+				if (name.Contains("/"))
+					name = name.Split('/').Last();
+
+				if (!Images.TryGetValue(name, out var info))
+					info = null;
+				if (!sceneImages.TryGetValue(name, out var sceneInfo))
+					sceneInfo = null;
+
+				var replacement = GetMatchingReplacement(info, sceneInfo, tex);
+				if (replacement is null)
+					continue;
+
+				// Special handling for the mouse cursor
+				int cidx = CursorNames.IndexOf(name);
+				if (cidx != -1)
 				{
-					tex_name_stripped = tex_name_stripped.Split('/').Last();
+					if (cursors is null)
+						cursors = new TextureCursor[3];
+
+					cursors[cidx] = CreateCursor(replacement.path);
+					continue;
 				}
-				foreach (KeyValuePair<string, string> image in images)
+
+				// NavBall GaugeGee and GaugeThrottle needs special handling as well
+				if (name == "GaugeGee")
+					HarmonyPatches.GaugeGeeFilePath = replacement.path;
+				else if (name == "GaugeThrottle")
+					HarmonyPatches.GaugeThrottleFilePath = replacement.path;
+				else
 				{
-					string key_stripped = image.Key;
-					
-					if (image.Value.Contains("#"))
-					{
-						// Some textures have multiple variants in varying sizes. We don't want to overwrite a texture with the wrong dimensions, as it will not render correctly.
-						// For these special cases, we save the width and height in the filename, appended by a # to tell the program this is a multi-texture.
-						key_stripped = image.Key.Substring(0, image.Key.IndexOf("#", StringComparison.Ordinal));
-					}
-					if(key_stripped == tex_name_stripped)
-					{
-						// For the mouse cursor
-						if (cursor_names.Contains(key_stripped))
-						{
-							if (cursors == null)
-							{
-								cursors = new TextureCursor[3];
-							}
-							cursors[cursor_names.IndexOf(key_stripped)] = CreateCursor(image.Value);
-							continue;
-						}
-						// NavBall GaugeGee and GaugeThrottle needs special handling as well
-						if(key_stripped == "GaugeGee")
-						{
-							HarmonyPatches.GaugeGeeFilePath = image.Value;
-							continue;
-						}
-						if(key_stripped == "GaugeThrottle")
-						{
-							HarmonyPatches.GaugeThrottleFilePath = image.Value;
-							continue;
-						}
-						if (key_stripped != image.Key)
-						{
-							// Special case texture
-							string size = image.Key.Substring(image.Key.LastIndexOf("#")+1);
-							int width = int.Parse(size.Substring(0, size.IndexOf("x")));
-							int height = int.Parse(size.Substring(size.IndexOf("x")+1));
-							if(tex.width == width && tex.height == height)
-							{
-								//Debug.Log("HUDReplacer: Replacing texture " + image.Value);
-								ImageConversion.LoadImage(tex, File.ReadAllBytes(image.Value));
-								continue;
-							}
-						}
-						else
-						{
-							// Regular texture
-							//Debug.Log("HUDReplacer: Replacing texture " + image.Value);
-							ImageConversion.LoadImage(tex, File.ReadAllBytes(image.Value));
-							continue;
-						}
-					}
+					if (replacement.cachedTextureBytes is null)
+						replacement.cachedTextureBytes = File.ReadAllBytes(replacement.path);
+
+					tex.LoadImage(replacement.cachedTextureBytes);
 				}
 			}
+
 			// Need to wait a small amount of time after scene load before you can set the cursor.
 			this.Invoke(SetCursor, 1f);
+		}
+
+		private static SizedReplacementInfo GetMatchingReplacement(
+			ReplacementInfo info,
+			ReplacementInfo sceneInfo,
+			Texture2D tex
+		)
+		{
+			if (info is null && sceneInfo is null)
+				return null;
+
+			var rep = info?.GetMatchingReplacement(tex);
+			var sceneRep = sceneInfo?.GetMatchingReplacement(tex);
+			
+			if (rep != null && sceneRep != null)
+			{
+				if (rep.priority < sceneRep.priority)
+					return sceneRep;
+			}
+
+			return rep ?? sceneRep;
 		}
 
 		internal void LoadHUDColors()
